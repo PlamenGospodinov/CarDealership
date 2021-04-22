@@ -18,6 +18,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -67,6 +68,20 @@ public class MainPanel extends JFrame implements ChangeListener{
 	//downPanel for the results
 	JPanel downPanelCar = new JPanel();
 	
+	//labels for carConfig
+	JLabel brandCar = new JLabel("Избери марка автомобил: ");
+	JLabel modelCar = new JLabel("Въведи модел на автомобил: ");
+	JLabel yearCar = new JLabel("Въведи година на производство: ");
+	JLabel priceCar = new JLabel("Въведи цена на автомобила: ");
+	JLabel commentCar = new JLabel("Коментар: ");
+	
+	//TextFields and ComboBox of carConfig
+	//Don't forget to link brands to comboBox later !!!!
+	JComboBox<String> brandCombo = new JComboBox();
+	JTextField modelCarTF = new JTextField();
+	JTextField yearCarTF = new JTextField();
+	JTextField priceCarTF = new JTextField();
+	JTextField commentTF = new JTextField();
 	
 	
 	
@@ -132,9 +147,19 @@ public class MainPanel extends JFrame implements ChangeListener{
 		brandTable.addMouseListener(new TableListener());
 		//-------------------------------------------------
 		
-		
-		
-		
+		carConfig.setLayout(new GridLayout(3,1));
+		upPanelCar.setLayout(new GridLayout(5,2));
+		upPanelCar.add(brandCar);
+		upPanelCar.add(brandCombo);
+		upPanelCar.add(modelCar);
+		upPanelCar.add(modelCarTF);
+		upPanelCar.add(yearCar);
+		upPanelCar.add(yearCarTF);
+		upPanelCar.add(priceCar);
+		upPanelCar.add(priceCarTF);
+		upPanelCar.add(commentCar);
+		upPanelCar.add(commentTF);
+		carConfig.add(upPanelCar);
 		
 		
 		
