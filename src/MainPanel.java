@@ -16,7 +16,10 @@ import java.awt.event.MouseListener;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
+import javax.swing.ComboBoxModel;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -77,11 +80,21 @@ public class MainPanel extends JFrame implements ChangeListener{
 	
 	//TextFields and ComboBox of carConfig
 	//Don't forget to link brands to comboBox later !!!!
-	JComboBox<String> brandCombo = new JComboBox();
+	
+	
+	
+	static ArrayList<String> brandList = DBBrandHelper.getBrandData(); 
+	static String[] array = brandList.toArray(new String[brandList.size()]);
+	static JComboBox brandCombo = new JComboBox(array);
 	JTextField modelCarTF = new JTextField();
 	JTextField yearCarTF = new JTextField();
 	JTextField priceCarTF = new JTextField();
 	JTextField commentTF = new JTextField();
+	
+	//Buttons for carConfig
+	JButton addBtnCar = new JButton("Добави");
+	JButton deleteBtnCar = new JButton("Изтрий");
+	JButton editBtnCar = new JButton("Промени");
 	
 	
 	
@@ -122,6 +135,7 @@ public class MainPanel extends JFrame implements ChangeListener{
 		addBtn.addActionListener(new AddAction());
 		deleteBtn.addActionListener(new DeleteAction());
 		editBtn.addActionListener(new EditAction());
+		//setting button colors
 		addBtn.setBackground(Color.green);
 		deleteBtn.setBackground(new Color(255,138,138));
 		editBtn.setBackground(new Color(204,204,255));
@@ -148,6 +162,7 @@ public class MainPanel extends JFrame implements ChangeListener{
 		//-------------------------------------------------
 		
 		carConfig.setLayout(new GridLayout(3,1));
+		//setting upPanel in carConfig
 		upPanelCar.setLayout(new GridLayout(5,2));
 		upPanelCar.add(brandCar);
 		upPanelCar.add(brandCombo);
@@ -160,7 +175,24 @@ public class MainPanel extends JFrame implements ChangeListener{
 		upPanelCar.add(commentCar);
 		upPanelCar.add(commentTF);
 		carConfig.add(upPanelCar);
-		
+		//------------------------
+		//midPanelCar.setLayout(new GridLayout(1,3));
+		//setting some fonts and colors
+		brandCar.setFont(brandCar.getFont().deriveFont(20.0f));
+		modelCar.setFont(modelCar.getFont().deriveFont(20.0f));
+		yearCar.setFont(yearCar.getFont().deriveFont(20.0f));
+		priceCar.setFont(priceCar.getFont().deriveFont(20.0f));
+		commentCar.setFont(commentCar.getFont().deriveFont(20.0f));
+		addBtnCar.setFont(addBtnCar.getFont().deriveFont(25.0f));
+		editBtnCar.setFont(editBtnCar.getFont().deriveFont(25.0f));
+		deleteBtnCar.setFont(deleteBtnCar.getFont().deriveFont(25.0f));
+		addBtnCar.setBackground(Color.green);
+		deleteBtnCar.setBackground(new Color(255,138,138));
+		editBtnCar.setBackground(new Color(204,204,255));
+		midPanelCar.add(addBtnCar);
+		midPanelCar.add(editBtnCar);
+		midPanelCar.add(deleteBtnCar);
+		carConfig.add(midPanelCar);
 		
 		
 		
@@ -191,11 +223,15 @@ public class MainPanel extends JFrame implements ChangeListener{
 				
 				state.execute();
 				brandTable.setModel(DBBrandHelper.getAllData());
+				array = brandList.toArray(new String[brandList.size()]);
+				
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}finally {
 				try {
+					brandCombo = new JComboBox(array);
+					
 					state.close();
 					conn.close();
 				} catch (SQLException e) {
@@ -222,7 +258,10 @@ public class MainPanel extends JFrame implements ChangeListener{
 				state.setInt(1, id);
 				state.execute();
 				id = -1;
+				
 				brandTable.setModel(DBBrandHelper.getAllData());
+				array = brandList.toArray(new String[brandList.size()]);
+				brandCombo = new JComboBox(array);
 			} catch (SQLException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -243,6 +282,8 @@ public class MainPanel extends JFrame implements ChangeListener{
 				state.execute();
 				id = -1;
 				brandTable.setModel(DBBrandHelper.getAllData());
+				array = brandList.toArray(new String[brandList.size()]);
+				brandCombo = new JComboBox(array);
 			} catch (SQLException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();

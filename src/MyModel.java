@@ -15,8 +15,8 @@ public class MyModel extends AbstractTableModel {
 	private ResultSet result;	
 	private int rowCount;	
 	private int columnCount;
-	
 	private ArrayList<Object> data=new ArrayList<Object>();
+	private ArrayList<String> brands=new ArrayList<String>();
 	 
 	 public MyModel(ResultSet rs) throws Exception
 	 {
@@ -31,11 +31,14 @@ public class MyModel extends AbstractTableModel {
 		 rowCount=0;
 		 columnCount=metaData.getColumnCount();
 		 
+		 
 		 while(rs.next()){
 			 Object[] row=new Object[columnCount];
 			 for(int j=0;j<columnCount;j++){
 			 row[j]=rs.getObject(j+1);
-			 }			 
+			 brands.add(rs.getString("BRAND"));
+			 }		
+			
 			 data.add(row);
 			 rowCount++;
 		}// while
@@ -48,6 +51,12 @@ public class MyModel extends AbstractTableModel {
 	 public int getRowCount(){
 		 return rowCount;
 	 }
+	 
+	 public ArrayList<String> getBrands(){
+		 return brands;
+	 }
+	 
+	 
 	 
 	 public Object getValueAt(int rowIndex, int columnIndex){
 		 Object[] row=(Object[]) data.get(rowIndex);
