@@ -28,8 +28,9 @@ import javax.swing.JOptionPane;
 
 public class MainPanel extends JFrame implements ChangeListener{
 	Connection conn=null;
-	int id=-1;
+	static int id=-1;
 	static int currentTab = 1;
+	static String selected;
 	PreparedStatement state = null;
 	JTable brandTable = new JTable();
 	JScrollPane scroller = new JScrollPane(brandTable);
@@ -85,7 +86,10 @@ public class MainPanel extends JFrame implements ChangeListener{
 	
 	static ArrayList<String> brandList = DBBrandHelper.getBrandData(); 
 	static String[] array = brandList.toArray(new String[brandList.size()]);
-	static JComboBox brandCombo = new JComboBox(array);
+	//static JComboBox brandCombo = new JComboBox(array);
+	DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>(array);
+    JComboBox<String> brandCombo = new JComboBox<>(model);
+    
 	JTextField modelCarTF = new JTextField();
 	JTextField yearCarTF = new JTextField();
 	JTextField priceCarTF = new JTextField();
@@ -223,14 +227,18 @@ public class MainPanel extends JFrame implements ChangeListener{
 				
 				state.execute();
 				brandTable.setModel(DBBrandHelper.getAllData());
+				
+				//getting all the brands again
 				array = brandList.toArray(new String[brandList.size()]);
+				model.addElement(carBrandTF.getText());
+			    brandCombo.setSelectedItem(carBrandTF.getText());
 				
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}finally {
 				try {
-					brandCombo = new JComboBox(array);
+					//brandCombo = new JComboBox();
 					
 					state.close();
 					conn.close();
@@ -254,14 +262,18 @@ public class MainPanel extends JFrame implements ChangeListener{
 			conn = DBBrandHelper.getConnection();
 			String sql = "DELETE FROM BRANDS WHERE ID=?";
 			try {
+				
 				state = conn.prepareStatement(sql);
 				state.setInt(1, id);
 				state.execute();
-				id = -1;
+				
 				
 				brandTable.setModel(DBBrandHelper.getAllData());
 				array = brandList.toArray(new String[brandList.size()]);
-				brandCombo = new JComboBox(array);
+				model.removeElement(selected);
+				
+				id = -1;
+			    
 			} catch (SQLException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -283,7 +295,10 @@ public class MainPanel extends JFrame implements ChangeListener{
 				id = -1;
 				brandTable.setModel(DBBrandHelper.getAllData());
 				array = brandList.toArray(new String[brandList.size()]);
-				brandCombo = new JComboBox(array);
+				int index = brandList.indexOf(selected);
+				model.removeElement(selected);
+				model.addElement(carBrandTF.getText());
+			    brandCombo.setSelectedItem(carBrandTF.getText());
 			} catch (SQLException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -298,6 +313,8 @@ public class MainPanel extends JFrame implements ChangeListener{
 			// TODO Auto-generated method stub
 			
 			int row = brandTable.getSelectedRow();
+			selected = (String) brandTable.getValueAt(row, 1);
+			
 			id = Integer.parseInt(brandTable.getValueAt(row, 0).toString());
 			if(e.getClickCount() == 2) {
 			    if(currentTab == 0) {
