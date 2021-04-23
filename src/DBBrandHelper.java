@@ -3,6 +3,8 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+
 
 public class DBBrandHelper {
 	
@@ -11,6 +13,8 @@ public class DBBrandHelper {
 	static MyModel model = null;
 	static ResultSet result = null;
 	
+	static ArrayList<String> firstCol = new ArrayList<String>();
+	
 	static MyModel getAllData() {
 		conn = getConnection();
 		String sql = "SELECT*FROM BRANDS";
@@ -18,6 +22,8 @@ public class DBBrandHelper {
 			state = conn.prepareStatement(sql);
 			result = state.executeQuery();
 			model = new MyModel(result);
+			
+			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -26,6 +32,28 @@ public class DBBrandHelper {
 			e.printStackTrace();
 		}
 		return model;
+	}
+	
+	
+	//get Brands
+	static ArrayList<String> getBrandData() {
+		conn = getConnection();
+		String sql = "SELECT BRAND FROM BRANDS";
+		try {
+			state = conn.prepareStatement(sql);
+			result = state.executeQuery();
+			model = new MyModel(result);
+			firstCol = model.getBrands();
+			
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return firstCol;
 	}
 	
 	
