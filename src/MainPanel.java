@@ -29,7 +29,9 @@ import javax.swing.JOptionPane;
 public class MainPanel extends JFrame implements ChangeListener{
 	Connection conn=null;
 	static int id=-1;
-	static int currentTab = 1;
+	static int row;
+	static int selectedTab = 0;
+	static int currentTab = 0;
 	static String selected;
 	PreparedStatement state = null;
 	JTable brandTable = new JTable();
@@ -114,8 +116,8 @@ public class MainPanel extends JFrame implements ChangeListener{
 	//method which checks which tab is opened
 	public void stateChanged(ChangeEvent e) {
         JTabbedPane tabbedPane = (JTabbedPane) e.getSource();
-        int selectedIndex = tabbedPane.getSelectedIndex();
-        currentTab = selectedIndex;
+        selectedTab = tabbedPane.getSelectedIndex();
+        currentTab = selectedTab;
     }
 	
 	
@@ -230,6 +232,9 @@ public class MainPanel extends JFrame implements ChangeListener{
 		carTable.setModel(DBCarHelper.getAllData());
 		carTable.addMouseListener(new TableListener());
 		
+		//adding actionListeners to second tab buttons
+		addBtnCar.addActionListener(new AddAction());
+		
 		tab.addChangeListener(this);
 		this.setVisible(true);
 	}
@@ -242,12 +247,21 @@ public class MainPanel extends JFrame implements ChangeListener{
 		
 	}
 	
+	//clears text fields in the second form
+	public void clearSecondForm() {
+		
+		modelCarTF.setText("");
+		yearCarTF.setText("");
+		priceCarTF.setText("");
+		commentTF.setText("");
+	}
 	
 	//class with addBtn Action
 	class AddAction implements ActionListener{
 
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
+			
 			if(currentTab == 0) {
 				conn = DBBrandHelper.getConnection();
 				String sql = "insert into BRANDS values(null,?,?)";
@@ -281,7 +295,40 @@ public class MainPanel extends JFrame implements ChangeListener{
 				clearFirstForm();
 			}
 			else if(currentTab == 1) {
-				
+				conn = DBCarHelper.getConnection();
+				String sql = "insert into CARS values(null,?,?,?,?,?)";
+				try {
+					state = conn.prepareStatement(sql);
+					state.setString(1, brandCombo.getSelectedItem().toString());
+					state.setString(2, modelCarTF.getText());
+					state.setInt(3, Integer.parseInt(yearCarTF.getText()));
+					state.setFloat(4, Float.parseFloat(priceCarTF.getText()));
+					state.setString(5, commentTF.getText());
+					
+					state.execute();
+					carTable.setModel(DBCarHelper.getAllData());
+					/*brandTable.setModel(DBBrandHelper.getAllData());
+					
+					//getting all the brands again
+					array = brandList.toArray(new String[brandList.size()]);
+					model.addElement(carBrandTF.getText());
+				    brandCombo.setSelectedItem(carBrandTF.getText());*/
+					
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}finally {
+					try {
+						//brandCombo = new JComboBox();
+						
+						state.close();
+						conn.close();
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				clearSecondForm();
 			}
 		}
 		
@@ -346,11 +393,19 @@ public class MainPanel extends JFrame implements ChangeListener{
 		@Override
 		public void mouseClicked(MouseEvent e) {
 			// TODO Auto-generated method stub
+			if(currentTab == 0) {
+				row = brandTable.getSelectedRow();
+				selected = (String) brandTable.getValueAt(row, 1);
+				id = Integer.parseInt(brandTable.getValueAt(row, 0).toString());
+			}
+			else if(currentTab == 1) {
+				//continue from here
+				row = carTable.getSelectedRow();
+				selected = (String)carTable.getValueAt(row, 1);
+			}
 			
-			int row = brandTable.getSelectedRow();
-			selected = (String) brandTable.getValueAt(row, 1);
 			
-			id = Integer.parseInt(brandTable.getValueAt(row, 0).toString());
+			
 			if(e.getClickCount() == 2) {
 			    if(currentTab == 0) {
 			    	carBrandTF.setText(brandTable.getValueAt(row, 1).toString());
