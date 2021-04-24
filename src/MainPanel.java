@@ -34,6 +34,8 @@ public class MainPanel extends JFrame implements ChangeListener{
 	PreparedStatement state = null;
 	JTable brandTable = new JTable();
 	JScrollPane scroller = new JScrollPane(brandTable);
+	JTable carTable = new JTable();
+	JScrollPane scrollerCar = new JScrollPane(carTable);
 	JTabbedPane tab = new JTabbedPane();
 	JPanel brandConfig = new JPanel();
 	JPanel carConfig = new JPanel();
@@ -45,22 +47,28 @@ public class MainPanel extends JFrame implements ChangeListener{
 	JPanel upPanel = new JPanel();
 	//midPanel for the Buttons
 	JPanel midPanel = new JPanel();
+	//search panel
+	JPanel searchPanelBrand = new JPanel();
 	//downPanel for the results
 	JPanel downPanel = new JPanel();
+	JPanel blankPanel = new JPanel();
 	//----------------------------
 	
 	//labels for brandConfig Tab
 	JLabel carBrand = new JLabel("Въведи марка на автомобила: ");
 	JLabel countryOfOrigin = new JLabel("Държава на производство: ");
+	JLabel searchLabelBrand = new JLabel("Търсене по държава: ");
 	
 	//TextFields for brandConfig Tab
 	JTextField carBrandTF = new JTextField();
 	JTextField countryOfOriginTF = new JTextField();
+	JTextField searchBrandTF = new JTextField();
 	
 	//buttons for brandConfig Tab
 	JButton addBtn = new JButton("Добави");
 	JButton deleteBtn = new JButton("Изтрий");
 	JButton editBtn = new JButton("Промени");
+	JButton searchBrandBtn = new JButton("Търси");
 	
 	//-----------------------------
 	
@@ -78,7 +86,7 @@ public class MainPanel extends JFrame implements ChangeListener{
 	JLabel yearCar = new JLabel("Въведи година на производство: ");
 	JLabel priceCar = new JLabel("Въведи цена на автомобила: ");
 	JLabel commentCar = new JLabel("Коментар: ");
-	
+	JLabel searchCar = new JLabel("Търси по цена: ");
 	//TextFields and ComboBox of carConfig
 	//Don't forget to link brands to comboBox later !!!!
 	
@@ -94,12 +102,13 @@ public class MainPanel extends JFrame implements ChangeListener{
 	JTextField yearCarTF = new JTextField();
 	JTextField priceCarTF = new JTextField();
 	JTextField commentTF = new JTextField();
+	JTextField searchCarTF = new JTextField();
 	
 	//Buttons for carConfig
 	JButton addBtnCar = new JButton("Добави");
 	JButton deleteBtnCar = new JButton("Изтрий");
 	JButton editBtnCar = new JButton("Промени");
-	
+	JButton searchCarBtn = new JButton("Търси");
 	
 	
 	//method which checks which tab is opened
@@ -120,7 +129,7 @@ public class MainPanel extends JFrame implements ChangeListener{
 		//brandConfig Code
 		//-------------------------------------------------
 		//configuration of upPanel in brandConfig
-		brandConfig.setLayout(new GridLayout(3,1));
+		brandConfig.setLayout(new GridLayout(4,1));
 		upPanel.setLayout(new GridLayout(2,2));
 		upPanel.add(carBrand);
 		upPanel.add(carBrandTF);
@@ -145,6 +154,7 @@ public class MainPanel extends JFrame implements ChangeListener{
 		editBtn.setBackground(new Color(204,204,255));
 		
 		
+		
 		//Adding tabs to the mainPanel
 		tab.add(brandConfig,"Конфигурация на марки");
 		tab.add(carConfig,"Конфигурация на автомобили");
@@ -153,17 +163,27 @@ public class MainPanel extends JFrame implements ChangeListener{
 		this.add(tab);
 		
 		//setting fontSize to bigger one
-		carBrand.setFont(carBrand.getFont().deriveFont(20.0f));
-		countryOfOrigin.setFont(countryOfOrigin.getFont().deriveFont(20.0f));
+		carBrand.setFont(carBrand.getFont().deriveFont(15.0f));
+		countryOfOrigin.setFont(countryOfOrigin.getFont().deriveFont(15.0f));
 		
 		
 		//downPanel of brandConfig
 		downPanel.add(scroller);
 		brandConfig.add(downPanel);
-		scroller.setPreferredSize(new Dimension(760,240));
+		
+		scroller.setPreferredSize(new Dimension(760,170));
 		brandTable.setModel(DBBrandHelper.getAllData());
 		brandTable.addMouseListener(new TableListener());
 		//-------------------------------------------------
+		
+		//adding search textBox and label to searchPanelBrand
+		searchPanelBrand.setLayout(new GridLayout(1,3));
+		searchPanelBrand.add(searchLabelBrand);
+		searchPanelBrand.add(searchBrandTF);
+		searchPanelBrand.add(searchBrandBtn);
+		brandConfig.add(searchPanelBrand);
+		
+		
 		
 		carConfig.setLayout(new GridLayout(3,1));
 		//setting upPanel in carConfig
@@ -193,12 +213,22 @@ public class MainPanel extends JFrame implements ChangeListener{
 		addBtnCar.setBackground(Color.green);
 		deleteBtnCar.setBackground(new Color(255,138,138));
 		editBtnCar.setBackground(new Color(204,204,255));
+		midPanelCar.setLayout(new GridLayout(2,6));
 		midPanelCar.add(addBtnCar);
 		midPanelCar.add(editBtnCar);
 		midPanelCar.add(deleteBtnCar);
+		midPanelCar.add(searchCar);
+		midPanelCar.add(searchCarTF);
+		midPanelCar.add(searchCarBtn);
 		carConfig.add(midPanelCar);
-		
-		
+		downPanelCar.add(scrollerCar);
+		carConfig.add(downPanelCar);
+		//setting table of cars
+		scrollerCar.setPreferredSize(new Dimension(760,230));
+		searchCar.setFont(searchCar.getFont().deriveFont(20.0f));
+		searchCarBtn.setFont(searchCarBtn.getFont().deriveFont(20.0f));
+		carTable.setModel(DBCarHelper.getAllData());
+		carTable.addMouseListener(new TableListener());
 		
 		tab.addChangeListener(this);
 		this.setVisible(true);
@@ -218,36 +248,41 @@ public class MainPanel extends JFrame implements ChangeListener{
 
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			conn = DBBrandHelper.getConnection();
-			String sql = "insert into BRANDS values(null,?,?)";
-			try {
-				state = conn.prepareStatement(sql);
-				state.setString(1, carBrandTF.getText());
-				state.setString(2, countryOfOriginTF.getText());
-				
-				state.execute();
-				brandTable.setModel(DBBrandHelper.getAllData());
-				
-				//getting all the brands again
-				array = brandList.toArray(new String[brandList.size()]);
-				model.addElement(carBrandTF.getText());
-			    brandCombo.setSelectedItem(carBrandTF.getText());
-				
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}finally {
+			if(currentTab == 0) {
+				conn = DBBrandHelper.getConnection();
+				String sql = "insert into BRANDS values(null,?,?)";
 				try {
-					//brandCombo = new JComboBox();
+					state = conn.prepareStatement(sql);
+					state.setString(1, carBrandTF.getText());
+					state.setString(2, countryOfOriginTF.getText());
 					
-					state.close();
-					conn.close();
+					state.execute();
+					brandTable.setModel(DBBrandHelper.getAllData());
+					
+					//getting all the brands again
+					array = brandList.toArray(new String[brandList.size()]);
+					model.addElement(carBrandTF.getText());
+				    brandCombo.setSelectedItem(carBrandTF.getText());
+					
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
+				}finally {
+					try {
+						//brandCombo = new JComboBox();
+						
+						state.close();
+						conn.close();
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
+				clearFirstForm();
 			}
-			clearFirstForm();
+			else if(currentTab == 1) {
+				
+			}
 		}
 		
 	}
@@ -295,7 +330,7 @@ public class MainPanel extends JFrame implements ChangeListener{
 				id = -1;
 				brandTable.setModel(DBBrandHelper.getAllData());
 				array = brandList.toArray(new String[brandList.size()]);
-				int index = brandList.indexOf(selected);
+				//int index = brandList.indexOf(selected);
 				model.removeElement(selected);
 				model.addElement(carBrandTF.getText());
 			    brandCombo.setSelectedItem(carBrandTF.getText());
