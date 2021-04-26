@@ -234,6 +234,7 @@ public class MainPanel extends JFrame implements ChangeListener{
 		
 		//adding actionListeners to second tab buttons
 		addBtnCar.addActionListener(new AddAction());
+	    deleteBtnCar.addActionListener(new DeleteAction());
 		
 		tab.addChangeListener(this);
 		this.setVisible(true);
@@ -338,28 +339,52 @@ public class MainPanel extends JFrame implements ChangeListener{
 	//class with deleteBtn Action
 	class DeleteAction implements ActionListener{
 
+		
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			// TODO Auto-generated method stub
-			conn = DBBrandHelper.getConnection();
-			String sql = "DELETE FROM BRANDS WHERE ID=?";
-			try {
-				
-				state = conn.prepareStatement(sql);
-				state.setInt(1, id);
-				state.execute();
-				
-				
-				brandTable.setModel(DBBrandHelper.getAllData());
-				array = brandList.toArray(new String[brandList.size()]);
-				model.removeElement(selected);
-				
-				id = -1;
-			    
-			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+			if(currentTab == 0) {
+				// TODO Auto-generated method stub
+				conn = DBBrandHelper.getConnection();
+				String sql = "DELETE FROM BRANDS WHERE ID=?";
+				try {
+					
+					state = conn.prepareStatement(sql);
+					state.setInt(1, id);
+					state.execute();
+					
+					
+					brandTable.setModel(DBBrandHelper.getAllData());
+					array = brandList.toArray(new String[brandList.size()]);
+					model.removeElement(selected);
+					
+					id = -1;
+				    
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
+			else if(currentTab == 1) {
+				// TODO Auto-generated method stub
+				conn = DBBrandHelper.getConnection();
+				String sql = "DELETE FROM CARS WHERE CARID=?";
+				try {
+					
+					state = conn.prepareStatement(sql);
+					state.setInt(1, id);
+					state.execute();
+					
+					
+					carTable.setModel(DBCarHelper.getAllData());
+					
+					id = -1;
+				    
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+			
 		}
 		
 	}
@@ -367,24 +392,30 @@ public class MainPanel extends JFrame implements ChangeListener{
 	//class with editBtn Action
 	class EditAction implements ActionListener{
 		public void actionPerformed(ActionEvent e) {
-			// TODO Auto-generated method stub
-			conn = DBBrandHelper.getConnection();
-			String sql = "UPDATE BRANDS SET BRAND = \'" + carBrandTF.getText() + "\', COUNTRY = \'"  + countryOfOriginTF.getText() + "\' WHERE ID=?;";
-			try {
-				state = conn.prepareStatement(sql);
-				state.setInt(1, id);
-				state.execute();
-				id = -1;
-				brandTable.setModel(DBBrandHelper.getAllData());
-				array = brandList.toArray(new String[brandList.size()]);
-				//int index = brandList.indexOf(selected);
-				model.removeElement(selected);
-				model.addElement(carBrandTF.getText());
-			    brandCombo.setSelectedItem(carBrandTF.getText());
-			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+			if(currentTab == 0) {
+				// TODO Auto-generated method stub
+				conn = DBBrandHelper.getConnection();
+				String sql = "UPDATE BRANDS SET BRAND = \'" + carBrandTF.getText() + "\', COUNTRY = \'"  + countryOfOriginTF.getText() + "\' WHERE ID=?;";
+				try {
+					state = conn.prepareStatement(sql);
+					state.setInt(1, id);
+					state.execute();
+					id = -1;
+					brandTable.setModel(DBBrandHelper.getAllData());
+					array = brandList.toArray(new String[brandList.size()]);
+					//int index = brandList.indexOf(selected);
+					model.removeElement(selected);
+					model.addElement(carBrandTF.getText());
+				    brandCombo.setSelectedItem(carBrandTF.getText());
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
+			else if(currentTab == 1) {
+				
+			}
+			
 		}
 	}
 	
@@ -402,6 +433,7 @@ public class MainPanel extends JFrame implements ChangeListener{
 				//continue from here
 				row = carTable.getSelectedRow();
 				selected = (String)carTable.getValueAt(row, 1);
+				id = Integer.parseInt(carTable.getValueAt(row, 0).toString());
 			}
 			
 			
@@ -410,6 +442,13 @@ public class MainPanel extends JFrame implements ChangeListener{
 			    if(currentTab == 0) {
 			    	carBrandTF.setText(brandTable.getValueAt(row, 1).toString());
 					countryOfOriginTF.setText(brandTable.getValueAt(row, 2).toString());
+			    }
+			    else if(currentTab == 1) {
+			    	brandCombo.setSelectedItem(carTable.getValueAt(row, 1));
+			    	modelCarTF.setText(carTable.getValueAt(row, 2).toString());
+			    	yearCarTF.setText(carTable.getValueAt(row, 3).toString());
+			    	priceCarTF.setText(carTable.getValueAt(row, 4).toString());
+			    	commentTF.setText(carTable.getValueAt(row, 5).toString());
 			    }
 			    
 			    
