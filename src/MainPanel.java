@@ -64,13 +64,14 @@ public class MainPanel extends JFrame implements ChangeListener{
 	//TextFields for brandConfig Tab
 	JTextField carBrandTF = new JTextField();
 	JTextField countryOfOriginTF = new JTextField();
-	JTextField searchBrandTF = new JTextField();
+	JTextField searchByCountryTF = new JTextField();
 	
 	//buttons for brandConfig Tab
 	JButton addBtn = new JButton("Добави");
 	JButton deleteBtn = new JButton("Изтрий");
 	JButton editBtn = new JButton("Промени");
 	JButton searchBrandBtn = new JButton("Търси");
+	JButton searchBrandStopBtn = new JButton("Отмени търсенето");
 	
 	//-----------------------------
 	
@@ -150,6 +151,7 @@ public class MainPanel extends JFrame implements ChangeListener{
 		addBtn.addActionListener(new AddAction());
 		deleteBtn.addActionListener(new DeleteAction());
 		editBtn.addActionListener(new EditAction());
+		searchBrandBtn.addActionListener(new SearchAction());
 		//setting button colors
 		addBtn.setBackground(Color.green);
 		deleteBtn.setBackground(new Color(255,138,138));
@@ -179,10 +181,11 @@ public class MainPanel extends JFrame implements ChangeListener{
 		//-------------------------------------------------
 		
 		//adding search textBox and label to searchPanelBrand
-		searchPanelBrand.setLayout(new GridLayout(1,3));
+		searchPanelBrand.setLayout(new GridLayout(2,2));
 		searchPanelBrand.add(searchLabelBrand);
-		searchPanelBrand.add(searchBrandTF);
+		searchPanelBrand.add(searchByCountryTF);
 		searchPanelBrand.add(searchBrandBtn);
+		searchPanelBrand.add(searchBrandStopBtn);
 		brandConfig.add(searchPanelBrand);
 		
 		
@@ -235,6 +238,7 @@ public class MainPanel extends JFrame implements ChangeListener{
 		//adding actionListeners to second tab buttons
 		addBtnCar.addActionListener(new AddAction());
 	    deleteBtnCar.addActionListener(new DeleteAction());
+	    editBtnCar.addActionListener(new EditAction());
 		
 		tab.addChangeListener(this);
 		this.setVisible(true);
@@ -413,11 +417,48 @@ public class MainPanel extends JFrame implements ChangeListener{
 				}
 			}
 			else if(currentTab == 1) {
-				
+				// TODO Auto-generated method stub
+				conn = DBBrandHelper.getConnection();
+				String sql = "UPDATE CARS SET BRAND = \'" + brandCombo.getSelectedItem().toString() + "\', MODEL = \'"  + modelCarTF.getText() + "\', YEAR = \'"  + yearCarTF.getText() + "\', PRICE = \'"  + priceCarTF.getText() + "\', COMMENT = \'"  + commentTF.getText() + "\' WHERE CARID=?;";
+				try {
+					state = conn.prepareStatement(sql);
+					state.setInt(1, id);
+					state.execute();
+					id = -1;
+					carTable.setModel(DBCarHelper.getAllData());
+					
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 			
 		}
 	}
+	
+    class SearchAction implements ActionListener{
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
+			if(currentTab == 0) {
+				conn = DBBrandHelper.getConnection();
+				String sql = "SELECT * FROM BRANDS WHERE COUNTRY = '" + searchByCountryTF.toString() + "'";
+				try {
+					state = conn.prepareStatement(sql);
+					//state.setString(2, searchByCountryTF.toString());
+					state.execute();
+					//id = -1;
+					brandTable.setModel(DBBrandHelper.getAllData());
+					
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		}
+    	
+    }
 	
 	class TableListener implements MouseListener{
 
