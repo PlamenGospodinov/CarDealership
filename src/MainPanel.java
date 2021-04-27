@@ -250,7 +250,7 @@ public class MainPanel extends JFrame implements ChangeListener{
 		tab.addChangeListener(this);
 		this.setVisible(true);
 	}
-	
+	//----------------------------------------
 	
 	//clears text fields in first form
 	public void clearFirstForm() {
