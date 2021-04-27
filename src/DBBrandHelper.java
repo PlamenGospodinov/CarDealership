@@ -35,6 +35,26 @@ public class DBBrandHelper {
 	}
 	
 	
+	static MyModel getSearchData(String country) {
+		conn = getConnection();
+		String sql = "SELECT*FROM BRANDS WHERE COUNTRY = \'" + country + "\'";
+		try {
+			state = conn.prepareStatement(sql);
+			result = state.executeQuery();
+			model = new MyModel(result);
+			
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return model;
+	}
+	
+	
 	//get Brands
 	static ArrayList<String> getBrandData() {
 		conn = getConnection();

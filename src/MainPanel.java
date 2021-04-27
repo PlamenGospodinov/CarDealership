@@ -16,6 +16,7 @@ import java.awt.event.MouseListener;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 
 import javax.swing.ComboBoxModel;
@@ -28,6 +29,7 @@ import javax.swing.JOptionPane;
 
 public class MainPanel extends JFrame implements ChangeListener{
 	Connection conn=null;
+	JFrame f;  
 	static int id=-1;
 	static int row;
 	static int selectedTab = 0;
@@ -71,7 +73,7 @@ public class MainPanel extends JFrame implements ChangeListener{
 	JButton deleteBtn = new JButton("Изтрий");
 	JButton editBtn = new JButton("Промени");
 	JButton searchBrandBtn = new JButton("Търси");
-	JButton searchBrandStopBtn = new JButton("Отмени търсенето");
+	JButton searchBrandCancelBtn = new JButton("Отмени търсенето");
 	
 	//-----------------------------
 	
@@ -89,7 +91,7 @@ public class MainPanel extends JFrame implements ChangeListener{
 	JLabel yearCar = new JLabel("Въведи година на производство: ");
 	JLabel priceCar = new JLabel("Въведи цена на автомобила: ");
 	JLabel commentCar = new JLabel("Коментар: ");
-	JLabel searchCar = new JLabel("Търси по цена: ");
+	JLabel searchCar = new JLabel("Търси по цена(над): ");
 	//TextFields and ComboBox of carConfig
 	//Don't forget to link brands to comboBox later !!!!
 	
@@ -152,6 +154,8 @@ public class MainPanel extends JFrame implements ChangeListener{
 		deleteBtn.addActionListener(new DeleteAction());
 		editBtn.addActionListener(new EditAction());
 		searchBrandBtn.addActionListener(new SearchAction());
+		searchBrandCancelBtn.addActionListener(new CancelSearchAction());
+		
 		//setting button colors
 		addBtn.setBackground(Color.green);
 		deleteBtn.setBackground(new Color(255,138,138));
@@ -185,7 +189,7 @@ public class MainPanel extends JFrame implements ChangeListener{
 		searchPanelBrand.add(searchLabelBrand);
 		searchPanelBrand.add(searchByCountryTF);
 		searchPanelBrand.add(searchBrandBtn);
-		searchPanelBrand.add(searchBrandStopBtn);
+		searchPanelBrand.add(searchBrandCancelBtn);
 		brandConfig.add(searchPanelBrand);
 		
 		
@@ -365,8 +369,10 @@ public class MainPanel extends JFrame implements ChangeListener{
 				    
 				} catch (SQLException e1) {
 					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					JOptionPane.showMessageDialog(f,"Съществуват автомобили от следната марка.Ако искате да изтриете марката, изтриите първо всички автомобили от дадената марка!");
+					//e1.printStackTrace();
 				}
+				
 			}
 			else if(currentTab == 1) {
 				// TODO Auto-generated method stub
@@ -443,13 +449,38 @@ public class MainPanel extends JFrame implements ChangeListener{
 			// TODO Auto-generated method stub
 			if(currentTab == 0) {
 				conn = DBBrandHelper.getConnection();
-				String sql = "SELECT * FROM BRANDS WHERE COUNTRY = '" + searchByCountryTF.toString() + "'";
+				String sql = "SELECT * FROM BRANDS WHERE COUNTRY = \'" + searchByCountryTF.getText() + "\';";
+				
 				try {
 					state = conn.prepareStatement(sql);
-					//state.setString(2, searchByCountryTF.toString());
-					state.execute();
-					//id = -1;
+					state.execute();	
+					brandTable.setModel(DBBrandHelper.getSearchData(searchByCountryTF.getText()));
+					
+					
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		}
+    	
+    }
+    
+    
+    class CancelSearchAction implements ActionListener{
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
+			if(currentTab == 0) {
+				conn = DBBrandHelper.getConnection();
+				String sql = "SELECT * FROM BRANDS;";
+				
+				try {
+					state = conn.prepareStatement(sql);
+					state.execute();	
 					brandTable.setModel(DBBrandHelper.getAllData());
+					
 					
 				} catch (SQLException e1) {
 					// TODO Auto-generated catch block
