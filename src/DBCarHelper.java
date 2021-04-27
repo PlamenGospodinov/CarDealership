@@ -34,6 +34,25 @@ public class DBCarHelper {
 		return model;
 	}
 	
+	static MyModel getSearchData(String price) {
+		conn = getConnection();
+		String sql = "SELECT*FROM CARS WHERE PRICE > " + Integer.parseInt(price);
+		try {
+			state = conn.prepareStatement(sql);
+			result = state.executeQuery();
+			model = new MyModel(result);
+			
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return model;
+	}
+	
 	
 	//get Brands
 	/*static ArrayList<String> getBrandData() {

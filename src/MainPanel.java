@@ -114,7 +114,7 @@ public class MainPanel extends JFrame implements ChangeListener{
 	JButton deleteBtnCar = new JButton("Изтрий");
 	JButton editBtnCar = new JButton("Промени");
 	JButton searchCarBtn = new JButton("Търси");
-	
+	JButton searchCarCancelBtn = new JButton("Отмени търсенето");
 	
 	//method which checks which tab is opened
 	public void stateChanged(ChangeEvent e) {
@@ -231,9 +231,10 @@ public class MainPanel extends JFrame implements ChangeListener{
 		midPanelCar.add(searchCarBtn);
 		carConfig.add(midPanelCar);
 		downPanelCar.add(scrollerCar);
+		downPanelCar.add(searchCarCancelBtn);
 		carConfig.add(downPanelCar);
 		//setting table of cars
-		scrollerCar.setPreferredSize(new Dimension(760,230));
+		scrollerCar.setPreferredSize(new Dimension(760,180));
 		searchCar.setFont(searchCar.getFont().deriveFont(20.0f));
 		searchCarBtn.setFont(searchCarBtn.getFont().deriveFont(20.0f));
 		carTable.setModel(DBCarHelper.getAllData());
@@ -243,11 +244,13 @@ public class MainPanel extends JFrame implements ChangeListener{
 		addBtnCar.addActionListener(new AddAction());
 	    deleteBtnCar.addActionListener(new DeleteAction());
 	    editBtnCar.addActionListener(new EditAction());
-		
+		searchCarBtn.addActionListener(new SearchAction());
+		searchCarCancelBtn.addActionListener(new CancelSearchAction());
+	    
 		tab.addChangeListener(this);
 		this.setVisible(true);
 	}
-	
+	//----------------------------------------
 	
 	//clears text fields in first form
 	public void clearFirstForm() {
@@ -369,7 +372,7 @@ public class MainPanel extends JFrame implements ChangeListener{
 				    
 				} catch (SQLException e1) {
 					// TODO Auto-generated catch block
-					JOptionPane.showMessageDialog(f,"Съществуват автомобили от следната марка.Ако искате да изтриете марката, изтриите първо всички автомобили от дадената марка!");
+					JOptionPane.showMessageDialog(f,"Съществуват автомобили от следната марка.Ако искате да изтриете марката, изтриите първо всички автомобили от дадената марка!","Внимание!",JOptionPane.WARNING_MESSAGE);
 					//e1.printStackTrace();
 				}
 				
@@ -462,6 +465,21 @@ public class MainPanel extends JFrame implements ChangeListener{
 					e1.printStackTrace();
 				}
 			}
+			else if(currentTab == 1) {
+				conn = DBCarHelper.getConnection();
+				String sql = "SELECT * FROM CARS WHERE PRICE > " + searchCarTF.getText();
+				
+				try {
+					state = conn.prepareStatement(sql);
+					state.execute();	
+					carTable.setModel(DBCarHelper.getSearchData(searchCarTF.getText()));
+					
+					
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
 		}
     	
     }
@@ -480,6 +498,21 @@ public class MainPanel extends JFrame implements ChangeListener{
 					state = conn.prepareStatement(sql);
 					state.execute();	
 					brandTable.setModel(DBBrandHelper.getAllData());
+					
+					
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+			else if(currentTab == 1) {
+				conn = DBCarHelper.getConnection();
+				String sql = "SELECT * FROM CARS;";
+				
+				try {
+					state = conn.prepareStatement(sql);
+					state.execute();	
+					carTable.setModel(DBCarHelper.getAllData());
 					
 					
 				} catch (SQLException e1) {
