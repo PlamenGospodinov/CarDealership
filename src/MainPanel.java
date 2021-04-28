@@ -28,6 +28,8 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
 public class MainPanel extends JFrame implements ChangeListener{
+	
+	//---------SOME VARIABLES--------------
 	Connection conn=null;
 	JFrame f;  
 	static int id=-1;
@@ -36,16 +38,23 @@ public class MainPanel extends JFrame implements ChangeListener{
 	static int currentTab = 0;
 	static String selected;
 	PreparedStatement state = null;
+	
+	//---------TABLES-----------------
 	JTable brandTable = new JTable();
 	JScrollPane scroller = new JScrollPane(brandTable);
 	JTable carTable = new JTable();
+	JTable carSelectTable = new JTable();
 	JScrollPane scrollerCar = new JScrollPane(carTable);
+	JScrollPane scrollerCarSale = new JScrollPane(carSelectTable);
 	JTabbedPane tab = new JTabbedPane();
+	
+	//----------PANELS---------------
 	JPanel brandConfig = new JPanel();
 	JPanel carConfig = new JPanel();
 	JPanel salePanel = new JPanel();
 	JPanel searchPanel = new JPanel();
 	
+	//-------------------------------
 	//panels for brandConfig Tab
 	//upPanel for TextFields
 	JPanel upPanel = new JPanel();
@@ -92,11 +101,11 @@ public class MainPanel extends JFrame implements ChangeListener{
 	JLabel priceCar = new JLabel("Въведи цена на автомобила: ");
 	JLabel commentCar = new JLabel("Коментар: ");
 	JLabel searchCar = new JLabel("Търси по цена(над): ");
+	
+	
+	
+	//----------------------------------
 	//TextFields and ComboBox of carConfig
-	//Don't forget to link brands to comboBox later !!!!
-	
-	
-	
 	static ArrayList<String> brandList = DBBrandHelper.getBrandData(); 
 	static String[] array = brandList.toArray(new String[brandList.size()]);
 	//static JComboBox brandCombo = new JComboBox(array);
@@ -109,6 +118,8 @@ public class MainPanel extends JFrame implements ChangeListener{
 	JTextField commentTF = new JTextField();
 	JTextField searchCarTF = new JTextField();
 	
+	
+	//----------------------------------------------
 	//Buttons for carConfig
 	JButton addBtnCar = new JButton("Добави");
 	JButton deleteBtnCar = new JButton("Изтрий");
@@ -116,6 +127,8 @@ public class MainPanel extends JFrame implements ChangeListener{
 	JButton searchCarBtn = new JButton("Търси");
 	JButton searchCarCancelBtn = new JButton("Отмени търсенето");
 	
+	
+	//------------------------------------------------
 	//method which checks which tab is opened
 	public void stateChanged(ChangeEvent e) {
         JTabbedPane tabbedPane = (JTabbedPane) e.getSource();
@@ -124,6 +137,8 @@ public class MainPanel extends JFrame implements ChangeListener{
     }
 	
 	
+	
+	//-------------------MAIN PANEL------------------------------
 	public MainPanel() {
 		
 		this.setSize(800,800);
@@ -193,7 +208,7 @@ public class MainPanel extends JFrame implements ChangeListener{
 		brandConfig.add(searchPanelBrand);
 		
 		
-		
+		//-----------CAR CONFIG--------------
 		carConfig.setLayout(new GridLayout(3,1));
 		//setting upPanel in carConfig
 		upPanelCar.setLayout(new GridLayout(5,2));
@@ -208,9 +223,11 @@ public class MainPanel extends JFrame implements ChangeListener{
 		upPanelCar.add(commentCar);
 		upPanelCar.add(commentTF);
 		carConfig.add(upPanelCar);
+		
+		
+		
 		//------------------------
-		//midPanelCar.setLayout(new GridLayout(1,3));
-		//setting some fonts and colors
+		//SETTING FONTS AND COLORS
 		brandCar.setFont(brandCar.getFont().deriveFont(20.0f));
 		modelCar.setFont(modelCar.getFont().deriveFont(20.0f));
 		yearCar.setFont(yearCar.getFont().deriveFont(20.0f));
@@ -222,6 +239,9 @@ public class MainPanel extends JFrame implements ChangeListener{
 		addBtnCar.setBackground(Color.green);
 		deleteBtnCar.setBackground(new Color(255,138,138));
 		editBtnCar.setBackground(new Color(204,204,255));
+		
+		
+		//-------SETTING MID PANEL IN CAR PANEL----------
 		midPanelCar.setLayout(new GridLayout(2,6));
 		midPanelCar.add(addBtnCar);
 		midPanelCar.add(editBtnCar);
@@ -230,22 +250,52 @@ public class MainPanel extends JFrame implements ChangeListener{
 		midPanelCar.add(searchCarTF);
 		midPanelCar.add(searchCarBtn);
 		carConfig.add(midPanelCar);
+		
+		
+		//----SETTING DOWN PANEL IN CAR PANEL----------
 		downPanelCar.add(scrollerCar);
 		downPanelCar.add(searchCarCancelBtn);
 		carConfig.add(downPanelCar);
-		//setting table of cars
+		
+		
+		//----------setting table of CARS----------
 		scrollerCar.setPreferredSize(new Dimension(760,180));
 		searchCar.setFont(searchCar.getFont().deriveFont(20.0f));
 		searchCarBtn.setFont(searchCarBtn.getFont().deriveFont(20.0f));
 		carTable.setModel(DBCarHelper.getAllData());
 		carTable.addMouseListener(new TableListener());
 		
-		//adding actionListeners to second tab buttons
+		//adding actionListeners to CARS PANEL BUTTONS
 		addBtnCar.addActionListener(new AddAction());
 	    deleteBtnCar.addActionListener(new DeleteAction());
 	    editBtnCar.addActionListener(new EditAction());
 		searchCarBtn.addActionListener(new SearchAction());
 		searchCarCancelBtn.addActionListener(new CancelSearchAction());
+		
+		
+		//------ELEMENTS FOR salePanel------------
+		//upPanel for TextFields
+		JPanel upPanelSale = new JPanel();
+		//midPanel for the Buttons
+		JPanel midPanelSale = new JPanel();
+		//search panel
+		JPanel searchPanelBrandSale = new JPanel();
+		//downPanel for the results
+		JPanel downPanelSale = new JPanel();
+		
+		//---------------upPanel CONFIG-------------
+		JLabel selectCar = new JLabel("Избери автомобил като натиснеш 2 пъти върху него: ");
+		carSelectTable.setModel(DBCarHelper.getAllData());
+		selectCar.setFont(selectCar.getFont().deriveFont(20.0f));
+		selectCar.setHorizontalAlignment((int) CENTER_ALIGNMENT);
+		upPanelSale.setLayout(new GridLayout(2,1));
+		upPanelSale.add(selectCar);
+		upPanelSale.add(scrollerCarSale);
+		scrollerCarSale.setPreferredSize(new Dimension(550,100));
+		salePanel.setLayout(new GridLayout(4,2));
+		salePanel.add(upPanelSale);
+		
+		
 	    
 		tab.addChangeListener(this);
 		this.setVisible(true);
@@ -268,6 +318,8 @@ public class MainPanel extends JFrame implements ChangeListener{
 		commentTF.setText("");
 	}
 	
+	
+	//------------------------------------------
 	//class with addBtn Action
 	class AddAction implements ActionListener{
 
@@ -347,6 +399,8 @@ public class MainPanel extends JFrame implements ChangeListener{
 	}
 	
 	
+	
+	//-------------------------------------------
 	//class with deleteBtn Action
 	class DeleteAction implements ActionListener{
 
@@ -402,6 +456,8 @@ public class MainPanel extends JFrame implements ChangeListener{
 		
 	}
 	
+	
+	//-------------------------------------------------
 	//class with editBtn Action
 	class EditAction implements ActionListener{
 		public void actionPerformed(ActionEvent e) {
@@ -445,6 +501,8 @@ public class MainPanel extends JFrame implements ChangeListener{
 		}
 	}
 	
+	
+	//-------------CLASS WITH SEARCHBTN ACTION---------------------------
     class SearchAction implements ActionListener{
 
 		@Override
@@ -485,6 +543,8 @@ public class MainPanel extends JFrame implements ChangeListener{
     }
     
     
+    
+    //----------------CANCEL SEARCHBTN CLASS------------------------
     class CancelSearchAction implements ActionListener{
 
 		@Override
@@ -524,6 +584,7 @@ public class MainPanel extends JFrame implements ChangeListener{
     	
     }
 	
+    //-------TABLELISTENER FOR MOUSE COMMANDS-------------
 	class TableListener implements MouseListener{
 
 		@Override
