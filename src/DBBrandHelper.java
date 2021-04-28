@@ -55,7 +55,7 @@ public class DBBrandHelper {
 	}
 	
 	
-	//get Brands
+	//get Brands------FOR COMBOBOX IN CARS PANEL
 	static ArrayList<String> getBrandData() {
 		conn = getConnection();
 		String sql = "SELECT BRAND FROM BRANDS";

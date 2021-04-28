@@ -34,6 +34,8 @@ public class DBCarHelper {
 		return model;
 	}
 	
+	
+	//------SEARCH DATA AFTER CLICKING SEARCH BUTTON
 	static MyModel getSearchData(String price) {
 		conn = getConnection();
 		String sql = "SELECT*FROM CARS WHERE PRICE > " + Integer.parseInt(price);
@@ -54,27 +56,6 @@ public class DBCarHelper {
 	}
 	
 	
-	//get Brands
-	/*static ArrayList<String> getBrandData() {
-		conn = getConnection();
-		String sql = "SELECT BRAND FROM BRANDS";
-		try {
-			state = conn.prepareStatement(sql);
-			result = state.executeQuery();
-			model = new MyModel(result);
-			firstCol = model.getBrands();
-			
-			
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return firstCol;
-	}
-	*/
 	
 	static Connection getConnection() {
 		try {
