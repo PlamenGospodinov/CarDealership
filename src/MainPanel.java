@@ -6,6 +6,7 @@ import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import java.awt.Button;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
@@ -14,11 +15,15 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
+import javax.swing.BorderFactory;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -37,6 +42,8 @@ public class MainPanel extends JFrame implements ChangeListener{
 	static int selectedTab = 0;
 	static int currentTab = 0;
 	static String selected;
+	
+	
 	PreparedStatement state = null;
 	
 	//---------TABLES-----------------
@@ -44,9 +51,12 @@ public class MainPanel extends JFrame implements ChangeListener{
 	JScrollPane scroller = new JScrollPane(brandTable);
 	JTable carTable = new JTable();
 	JTable carSelectTable = new JTable();
+	JTable salesTable = new JTable();
+	JScrollPane scrollerSales = new JScrollPane(salesTable);
 	JScrollPane scrollerCar = new JScrollPane(carTable);
 	JScrollPane scrollerCarSale = new JScrollPane(carSelectTable);
 	JTabbedPane tab = new JTabbedPane();
+	
 	
 	//----------PANELS---------------
 	JPanel brandConfig = new JPanel();
@@ -136,6 +146,27 @@ public class MainPanel extends JFrame implements ChangeListener{
         currentTab = selectedTab;
     }
 	
+	
+	//----------COMBO BOXES FOR DATE--------
+	String[] months = {"01", "02","03","04","05","06","07","08","09","10","11","12"};
+	String[] days = {"01","02","03","04","05","06","07","08","09","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30","31"};
+	String[] years ={"2021","2022","2023","2024","2025","2026","2027","2028"};
+	DefaultComboBoxModel<String> monthModel = new DefaultComboBoxModel<>(months);
+    JComboBox<String> cbMonths = new JComboBox<>(monthModel);
+	//JComboBox<String> cbMonths = new JComboBox(months);
+    DefaultComboBoxModel<String> daysModel = new DefaultComboBoxModel<>(days);
+    JComboBox<String> cbDays = new JComboBox<>(daysModel);  
+    DefaultComboBoxModel<String> yearModel = new DefaultComboBoxModel<>(years);
+    JComboBox<String> cbYears = new JComboBox<>(yearModel);
+    
+    //--------SALES LABELS AND TEXTFIELDS
+    JLabel firstName = new JLabel("Първо име на клиент: ");
+	JLabel lastName = new JLabel("Фамилия на клиент: ");
+	JLabel salePrice = new JLabel("Цена при продажбата: ");
+	JTextField firstNameTF = new JTextField();
+	JTextField lastNameTF = new JTextField();
+	JTextField salePriceTF = new JTextField();
+	java.util.Date dateFormatted;
 	
 	
 	//-------------------MAIN PANEL------------------------------
@@ -276,15 +307,19 @@ public class MainPanel extends JFrame implements ChangeListener{
 		//------ELEMENTS FOR salePanel------------
 		//upPanel for TextFields
 		JPanel upPanelSale = new JPanel();
+		//datePanel for Sales
+		JPanel datePanelSale = new JPanel();
 		//midPanel for the Buttons
 		JPanel midPanelSale = new JPanel();
+		//Button Panel
+		JPanel saleButtons = new JPanel();
 		//search panel
 		JPanel searchPanelBrandSale = new JPanel();
 		//downPanel for the results
 		JPanel downPanelSale = new JPanel();
 		
-		//---------------upPanel CONFIG-------------
-		JLabel selectCar = new JLabel("Избери автомобил като натиснеш 2 пъти върху него: ");
+		//---------------upPanel Sale CONFIG-------------
+		JLabel selectCar = new JLabel("Избери автомобил като натиснеш 1 път върху него: ");
 		carSelectTable.setModel(DBCarHelper.getAllData());
 		selectCar.setFont(selectCar.getFont().deriveFont(20.0f));
 		selectCar.setHorizontalAlignment((int) CENTER_ALIGNMENT);
@@ -292,10 +327,65 @@ public class MainPanel extends JFrame implements ChangeListener{
 		upPanelSale.add(selectCar);
 		upPanelSale.add(scrollerCarSale);
 		scrollerCarSale.setPreferredSize(new Dimension(550,100));
-		salePanel.setLayout(new GridLayout(4,2));
+		salePanel.setLayout(new GridLayout(5,2));
 		salePanel.add(upPanelSale);
 		
 		
+		
+		//----------------midPanel Sale--------------
+		
+		
+		midPanelSale.setLayout(new GridLayout(4,2));
+		midPanelSale.add(firstName);
+		midPanelSale.add(firstNameTF);
+		midPanelSale.add(lastName);
+		midPanelSale.add(lastNameTF);
+		midPanelSale.add(salePrice);
+		midPanelSale.add(salePriceTF);
+		
+		salePanel.add(midPanelSale);
+		
+		//------SETTING DATEPICKER
+		
+		JLabel dateSaleLabel = new JLabel("Дата на продажбата:     ");
+		JLabel day = new JLabel("Ден:");
+		JLabel month = new JLabel("   Месец:");
+		JLabel year = new JLabel("   Година:");
+		//datePanelSale.setLayout(new GridLayout(3,2));
+		datePanelSale.add(dateSaleLabel);
+		datePanelSale.add(day);
+		datePanelSale.add(cbDays);
+		datePanelSale.add(month);
+		datePanelSale.add(cbMonths);
+		datePanelSale.add(year);
+		datePanelSale.add(cbYears);
+		salePanel.add(datePanelSale);
+		
+		
+		//--------------SALE BUTTONS----------------------
+		JButton addSaleBtn = new JButton("Добави продажба");
+		JButton editSaleBtn = new JButton("Редактирай продажба");
+		JButton deleteSaleBtn = new JButton("Премахни продажба");
+		
+		saleButtons.setLayout(new GridLayout(1,3));
+		saleButtons.add(addSaleBtn);
+		saleButtons.add(editSaleBtn);
+		saleButtons.add(deleteSaleBtn);
+		addSaleBtn.setBackground(Color.green);
+		deleteSaleBtn.setBackground(new Color(255,138,138));
+		editSaleBtn.setBackground(new Color(204,204,255));
+		addSaleBtn.setFont(addSaleBtn.getFont().deriveFont(20.0f));
+		editSaleBtn.setFont(editSaleBtn.getFont().deriveFont(20.0f));
+		deleteSaleBtn.setFont(deleteSaleBtn.getFont().deriveFont(20.0f));
+		datePanelSale.add(saleButtons);
+		addSaleBtn.addActionListener(new AddAction());
+		editSaleBtn.addActionListener(new EditAction());
+		deleteSaleBtn.addActionListener(new DeleteAction());
+		//--------------SALES TABLE----------------
+		scrollerSales.setPreferredSize(new Dimension(760,140));
+		salesTable.setModel(DBSaleHelper.getAllData());
+		downPanelSale.add(scrollerSales);
+		salePanel.add(downPanelSale);
 	    
 		tab.addChangeListener(this);
 		this.setVisible(true);
@@ -377,6 +467,52 @@ public class MainPanel extends JFrame implements ChangeListener{
 					array = brandList.toArray(new String[brandList.size()]);
 					model.addElement(carBrandTF.getText());
 				    brandCombo.setSelectedItem(carBrandTF.getText());*/
+					
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}finally {
+					try {
+						//brandCombo = new JComboBox();
+						
+						state.close();
+						conn.close();
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				clearSecondForm();
+			}
+			else if(currentTab == 2) {
+				conn = DBSaleHelper.getConnection();
+				String sql = "insert into SALES values(null,?,?,?,?,?,?,?)";
+				String date = cbDays.getSelectedItem().toString() + "/" + cbMonths.getSelectedItem().toString() + "/" + cbYears.getSelectedItem().toString();
+				try {
+					Date dateSql = (Date) new SimpleDateFormat("dd/MM/yyyy").parse(date);
+				} catch (ParseException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				}
+				System.out.println(date);
+				float difference = Float.parseFloat(carSelectTable.getValueAt(row, 4).toString()) - Float.parseFloat(salePriceTF.getText());
+				System.out.println(difference);
+				
+				try {
+					String car = carSelectTable.getValueAt(row, 1).toString() +" "+ carSelectTable.getValueAt(row, 2).toString();
+					state = conn.prepareStatement(sql);
+					state.setInt(1, Integer.parseInt(carSelectTable.getValueAt(row, 0).toString()));
+					//state.setDate(2, );
+					state.setString(3, firstNameTF.getText());
+					state.setString(4, lastNameTF.getText());
+					state.setFloat(5, Float.parseFloat(salePriceTF.getText()));
+					state.setFloat(6, difference);
+					state.setString(7, car);
+					
+					
+					state.execute();
+					salesTable.setModel(DBSaleHelper.getAllData());
+					
 					
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
@@ -599,6 +735,12 @@ public class MainPanel extends JFrame implements ChangeListener{
 				//continue from here
 				row = carTable.getSelectedRow();
 				selected = (String)carTable.getValueAt(row, 1);
+				id = Integer.parseInt(carTable.getValueAt(row, 0).toString());
+			}
+			else if(currentTab == 2) {
+				//continue from here
+				row = carSelectTable.getSelectedRow();
+				selected = (String)carSelectTable.getValueAt(row, 1);
 				id = Integer.parseInt(carTable.getValueAt(row, 0).toString());
 			}
 			
