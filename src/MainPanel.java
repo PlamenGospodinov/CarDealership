@@ -461,6 +461,7 @@ public class MainPanel extends JFrame implements ChangeListener{
 					
 					state.execute();
 					carTable.setModel(DBCarHelper.getAllData());
+					carSelectTable.setModel(DBCarHelper.getAllData());
 					/*brandTable.setModel(DBBrandHelper.getAllData());
 					
 					//getting all the brands again
@@ -487,22 +488,24 @@ public class MainPanel extends JFrame implements ChangeListener{
 			else if(currentTab == 2) {
 				conn = DBSaleHelper.getConnection();
 				String sql = "insert into SALES values(null,?,?,?,?,?,?,?)";
-				String date = cbDays.getSelectedItem().toString() + "/" + cbMonths.getSelectedItem().toString() + "/" + cbYears.getSelectedItem().toString();
+				String dateString = cbYears.getSelectedItem().toString() + "-" + cbMonths.getSelectedItem().toString() + "-" + cbDays.getSelectedItem().toString();
+				java.util.Date utilDate = null;
 				try {
-					Date dateSql = (Date) new SimpleDateFormat("dd/MM/yyyy").parse(date);
-				} catch (ParseException e2) {
+					utilDate = new SimpleDateFormat("yyyy-MM-dd").parse(dateString);
+				} catch (ParseException e1) {
 					// TODO Auto-generated catch block
-					e2.printStackTrace();
+					e1.printStackTrace();
 				}
-				System.out.println(date);
+			    java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
+				
 				float difference = Float.parseFloat(carSelectTable.getValueAt(row, 4).toString()) - Float.parseFloat(salePriceTF.getText());
-				System.out.println(difference);
+				
 				
 				try {
 					String car = carSelectTable.getValueAt(row, 1).toString() +" "+ carSelectTable.getValueAt(row, 2).toString();
 					state = conn.prepareStatement(sql);
 					state.setInt(1, Integer.parseInt(carSelectTable.getValueAt(row, 0).toString()));
-					//state.setDate(2, );
+					state.setDate(2, sqlDate);
 					state.setString(3, firstNameTF.getText());
 					state.setString(4, lastNameTF.getText());
 					state.setFloat(5, Float.parseFloat(salePriceTF.getText()));
@@ -579,6 +582,26 @@ public class MainPanel extends JFrame implements ChangeListener{
 					
 					
 					carTable.setModel(DBCarHelper.getAllData());
+					
+					id = -1;
+				    
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+			else if(currentTab == 2) {
+				// TODO Auto-generated method stub
+				conn = DBSaleHelper.getConnection();
+				String sql = "DELETE FROM SALES WHERE SALEID=?";
+				try {
+					
+					state = conn.prepareStatement(sql);
+					state.setInt(1, id);
+					state.execute();
+					
+					
+					salesTable.setModel(DBSaleHelper.getAllData());
 					
 					id = -1;
 				    
@@ -739,6 +762,7 @@ public class MainPanel extends JFrame implements ChangeListener{
 			}
 			else if(currentTab == 2) {
 				//continue from here
+				
 				row = carSelectTable.getSelectedRow();
 				selected = (String)carSelectTable.getValueAt(row, 1);
 				id = Integer.parseInt(carTable.getValueAt(row, 0).toString());
