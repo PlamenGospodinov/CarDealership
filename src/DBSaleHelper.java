@@ -10,16 +10,16 @@ public class DBSaleHelper {
 	
 	static Connection conn = null;
 	static PreparedStatement state = null;
-	static MyModel model = null;
+	static SaleModel model = null;
 	static ResultSet result = null;
 	
-	static MyModel getAllData() {
+	static SaleModel getAllData() {
 		conn = getConnection();
 		String sql = "SELECT*FROM SALES";
 		try {
 			state = conn.prepareStatement(sql);
 			result = state.executeQuery();
-			model = new MyModel(result);
+			model = new SaleModel(result);
 			
 			
 		} catch (SQLException e) {
@@ -33,13 +33,13 @@ public class DBSaleHelper {
 	}
 	
 	
-	static MyModel getSearchData(String firstName) {
+	static SaleModel getSearchData(String firstName) {
 		conn = getConnection();
 		String sql = "SELECT*FROM SALES WHERE FIRSTNAME = \'" + firstName + "\'";
 		try {
 			state = conn.prepareStatement(sql);
 			result = state.executeQuery();
-			model = new MyModel(result);
+			model = new SaleModel(result);
 			
 			
 		} catch (SQLException e) {
