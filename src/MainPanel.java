@@ -38,7 +38,9 @@ public class MainPanel extends JFrame implements ChangeListener{
 	Connection conn=null;
 	JFrame f;  
 	static int id=-1;
+	static int saleId = -1;
 	static int row;
+	static int saleRow = -1;
 	static int selectedTab = 0;
 	static int currentTab = 0;
 	static String selected;
@@ -615,7 +617,7 @@ public class MainPanel extends JFrame implements ChangeListener{
 				try {
 					
 					state = conn.prepareStatement(sql);
-					state.setInt(1, id);
+					state.setInt(1, saleId);
 					state.execute();
 					
 					
@@ -673,6 +675,10 @@ public class MainPanel extends JFrame implements ChangeListener{
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
+			}
+			else if(currentTab == 2) {
+				conn = DBSaleHelper.getConnection();
+				
 			}
 			
 		}
@@ -781,15 +787,16 @@ public class MainPanel extends JFrame implements ChangeListener{
 			}
 			else if(currentTab == 2) {
 				try {
+					
+					saleRow = salesTable.getSelectedRow();
+					saleId = Integer.parseInt(salesTable.getValueAt(saleRow, 0).toString());
+					row = salesTable.getSelectedRow();
+				}
+				catch(Exception e1){
 					row = carSelectTable.getSelectedRow();
 					selected = (String)carSelectTable.getValueAt(row, 1);
 					id = Integer.parseInt(carTable.getValueAt(row, 0).toString());
-				}
-				catch(Exception e1){
 					
-					row = salesTable.getSelectedRow();
-					//selected = (String)salesTable.getValueAt(row, 1);
-				    id = Integer.parseInt(salesTable.getValueAt(row, 0).toString());
 					
 				}
 				
@@ -810,9 +817,10 @@ public class MainPanel extends JFrame implements ChangeListener{
 			    	commentTF.setText(carTable.getValueAt(row, 5).toString());
 			    }
 			    else if(currentTab == 2) {
-			    	id = 1;
+			    	
 			    	firstNameTF.setText(salesTable.getValueAt(row, 3).toString());
 			    	lastNameTF.setText(salesTable.getValueAt(row, 4).toString());
+			    	salePriceTF.setText(salesTable.getValueAt(row, 5).toString());
 			    }
 			    
 			    
