@@ -314,7 +314,7 @@ public class MainPanel extends JFrame implements ChangeListener{
 		//Button Panel
 		JPanel saleButtons = new JPanel();
 		//search panel
-		JPanel searchPanelBrandSale = new JPanel();
+		JPanel searchPanelSale = new JPanel();
 		//downPanel for the results
 		JPanel downPanelSale = new JPanel();
 		
@@ -386,7 +386,25 @@ public class MainPanel extends JFrame implements ChangeListener{
 		salesTable.setModel(DBSaleHelper.getAllData());
 		downPanelSale.add(scrollerSales);
 		salePanel.add(downPanelSale);
+		
+		
+		//-----------SEARCH PART
+		JLabel searchByName = new JLabel("Търси по първо име на купувач:");
+		JTextField searchField = new JTextField();
+		JButton searchByNameBtn = new JButton("Търси");
+		JButton cancelNameSearch = new JButton("Отмени търсенето");
+		
+		searchPanelSale.setLayout(new GridLayout(2,2));
+		searchPanelSale.add(searchByName);
+		searchPanelSale.add(searchField);
+		searchPanelSale.add(searchByNameBtn);
+		searchPanelSale.add(cancelNameSearch);
+		salePanel.add(searchPanelSale);
 	    
+		
+		
+		carSelectTable.addMouseListener(new TableListener());
+		salesTable.addMouseListener(new TableListener());
 		tab.addChangeListener(this);
 		this.setVisible(true);
 	}
@@ -748,7 +766,7 @@ public class MainPanel extends JFrame implements ChangeListener{
 
 		@Override
 		public void mouseClicked(MouseEvent e) {
-			// TODO Auto-generated method stub
+			
 			if(currentTab == 0) {
 				row = brandTable.getSelectedRow();
 				selected = (String) brandTable.getValueAt(row, 1);
@@ -759,13 +777,22 @@ public class MainPanel extends JFrame implements ChangeListener{
 				row = carTable.getSelectedRow();
 				selected = (String)carTable.getValueAt(row, 1);
 				id = Integer.parseInt(carTable.getValueAt(row, 0).toString());
+				
 			}
 			else if(currentTab == 2) {
-				//continue from here
+				try {
+					row = carSelectTable.getSelectedRow();
+					selected = (String)carSelectTable.getValueAt(row, 1);
+					id = Integer.parseInt(carTable.getValueAt(row, 0).toString());
+				}
+				catch(Exception e1){
+					
+					row = salesTable.getSelectedRow();
+					//selected = (String)salesTable.getValueAt(row, 1);
+				    id = Integer.parseInt(salesTable.getValueAt(row, 0).toString());
+					
+				}
 				
-				row = carSelectTable.getSelectedRow();
-				selected = (String)carSelectTable.getValueAt(row, 1);
-				id = Integer.parseInt(carTable.getValueAt(row, 0).toString());
 			}
 			
 			
@@ -781,6 +808,11 @@ public class MainPanel extends JFrame implements ChangeListener{
 			    	yearCarTF.setText(carTable.getValueAt(row, 3).toString());
 			    	priceCarTF.setText(carTable.getValueAt(row, 4).toString());
 			    	commentTF.setText(carTable.getValueAt(row, 5).toString());
+			    }
+			    else if(currentTab == 2) {
+			    	id = 1;
+			    	firstNameTF.setText(salesTable.getValueAt(row, 3).toString());
+			    	lastNameTF.setText(salesTable.getValueAt(row, 4).toString());
 			    }
 			    
 			    
