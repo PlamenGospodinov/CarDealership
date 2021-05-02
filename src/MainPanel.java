@@ -171,6 +171,9 @@ public class MainPanel extends JFrame implements ChangeListener{
 	java.util.Date dateFormatted;
 	
 	
+	//---Search Field sale Panel
+	JTextField searchField = new JTextField();
+	
 	//-------------------MAIN PANEL------------------------------
 	public MainPanel() {
 		
@@ -392,9 +395,11 @@ public class MainPanel extends JFrame implements ChangeListener{
 		
 		//-----------SEARCH PART
 		JLabel searchByName = new JLabel("Търси по първо име на купувач:");
-		JTextField searchField = new JTextField();
+		
 		JButton searchByNameBtn = new JButton("Търси");
 		JButton cancelNameSearch = new JButton("Отмени търсенето");
+		searchByNameBtn.addActionListener(new SearchAction());
+		cancelNameSearch.addActionListener(new CancelSearchAction());
 		
 		searchPanelSale.setLayout(new GridLayout(2,2));
 		searchPanelSale.add(searchByName);
@@ -426,6 +431,12 @@ public class MainPanel extends JFrame implements ChangeListener{
 		yearCarTF.setText("");
 		priceCarTF.setText("");
 		commentTF.setText("");
+	}
+	
+	public void clearThirdForm() {
+		firstNameTF.setText("");
+		lastNameTF.setText("");
+		priceCarTF.setText("");
 	}
 	
 	
@@ -551,7 +562,8 @@ public class MainPanel extends JFrame implements ChangeListener{
 						e.printStackTrace();
 					}
 				}
-				clearSecondForm();
+				
+				clearThirdForm();
 			}
 		}
 		
@@ -607,7 +619,8 @@ public class MainPanel extends JFrame implements ChangeListener{
 				    
 				} catch (SQLException e1) {
 					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					JOptionPane.showMessageDialog(f,"Съществуват записи на продажби на автомобил със следните параметри, изтриите първо записа на продажбата,за да изтриете автомобила!","Внимание!",JOptionPane.WARNING_MESSAGE);
+					//e1.printStackTrace();
 				}
 			}
 			else if(currentTab == 2) {
@@ -678,7 +691,29 @@ public class MainPanel extends JFrame implements ChangeListener{
 			}
 			else if(currentTab == 2) {
 				conn = DBSaleHelper.getConnection();
+				String dateString = cbYears.getSelectedItem().toString() + "-" + cbMonths.getSelectedItem().toString() + "-" + cbDays.getSelectedItem().toString();
+				java.util.Date utilDate = null;
+				try {
+					utilDate = new SimpleDateFormat("yyyy-MM-dd").parse(dateString);
+				} catch (ParseException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			    java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
 				
+				float difference = Float.parseFloat(carSelectTable.getValueAt(row, 4).toString()) - Float.parseFloat(salePriceTF.getText());
+				String sql = "UPDATE SALES SET FIRSTNAME = \'"+ firstNameTF.getText() + "\', LASTNAME = \'" + lastNameTF.getText() + "\', SALEDATE = \'" + sqlDate + "\',PRICE = " +Float.parseFloat(salePriceTF.getText()) +" , DIFFERENCE = "+ difference + " WHERE SALEID=?;";
+				try {
+					state = conn.prepareStatement(sql);
+					state.setInt(1, saleId);
+					state.execute();
+					id = -1;
+					salesTable.setModel(DBSaleHelper.getAllData());
+					
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 			
 		}
@@ -721,6 +756,21 @@ public class MainPanel extends JFrame implements ChangeListener{
 					e1.printStackTrace();
 				}
 			}
+			else if(currentTab == 2) {
+				conn = DBSaleHelper.getConnection();
+				String sql = "SELECT * FROM SALES WHERE FIRSTNAME = \'" + searchField.getText() + "\'";
+				
+				try {
+					state = conn.prepareStatement(sql);
+					state.execute();	
+					salesTable.setModel(DBSaleHelper.getSearchData(searchField.getText()));
+					
+					
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
 		}
     	
     }
@@ -756,6 +806,21 @@ public class MainPanel extends JFrame implements ChangeListener{
 					state = conn.prepareStatement(sql);
 					state.execute();	
 					carTable.setModel(DBCarHelper.getAllData());
+					
+					
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+			else if(currentTab == 2) {
+				conn = DBSaleHelper.getConnection();
+				String sql = "SELECT * FROM SALES;";
+				
+				try {
+					state = conn.prepareStatement(sql);
+					state.execute();	
+					salesTable.setModel(DBSaleHelper.getAllData());
 					
 					
 				} catch (SQLException e1) {
