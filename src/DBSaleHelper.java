@@ -35,7 +35,7 @@ public class DBSaleHelper {
 	
 	static SaleModel getSearchData(String firstName) {
 		conn = getConnection();
-		String sql = "SELECT*FROM SALES WHERE FIRSTNAME = \'" + firstName + "\'";
+		String sql = "SELECT * FROM SALES WHERE FIRSTNAME = \'" + firstName + "\'";
 		try {
 			state = conn.prepareStatement(sql);
 			result = state.executeQuery();
