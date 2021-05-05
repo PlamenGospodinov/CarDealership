@@ -3,8 +3,13 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.RowFilter;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
 
 import java.awt.Button;
 import java.awt.Color;
@@ -22,6 +27,7 @@ import java.sql.SQLIntegrityConstraintViolationException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.regex.PatternSyntaxException;
 
 import javax.swing.BorderFactory;
 import javax.swing.ComboBoxModel;
@@ -412,8 +418,18 @@ public class MainPanel extends JFrame implements ChangeListener{
 		//--Search by 2 criteria panel
 		JPanel upPanelCriteria = new JPanel();
 		JPanel downPanelCriteria = new JPanel();
+		upPanelCriteria.setLayout(new GridLayout(3,1));
 		JLabel selectCriteria = new JLabel("Избери таблица и критерии,по които да търсиш:");
+		selectCriteria.setFont(selectCriteria.getFont().deriveFont(25.0f));
+		JLabel selectTableCriteria = new JLabel("Избери таблица,в която да търсиш:");
+		String[] chooseTable = {"Коли", "Продажби"};
+		JComboBox<String> tablesCombo = new JComboBox<>(chooseTable);
+		JTextField searchCriteriaTF = new JTextField();
 		upPanelCriteria.add(selectCriteria);
+		upPanelCriteria.add(selectTableCriteria);
+		upPanelCriteria.add(tablesCombo);
+		upPanelCriteria.add(searchCriteriaTF);
+		AddFilter(brandTable, searchCriteriaTF, 1);
 		searchPanel.add(upPanelCriteria);
 		
 		carSelectTable.addMouseListener(new TableListener());
@@ -422,6 +438,40 @@ public class MainPanel extends JFrame implements ChangeListener{
 		this.setVisible(true);
 	}
 	//----------------------------------------
+	
+	public static void AddFilter(JTable tbl, JTextField txtSearch, Integer SearchColumnIndex) {
+
+        DefaultTableModel model = (DefaultTableModel) tbl.getModel();
+
+        final TableRowSorter< DefaultTableModel> sorter = new TableRowSorter< DefaultTableModel>(model);
+        tbl.setRowSorter(sorter);
+
+        txtSearch.getDocument().addDocumentListener(new DocumentListener() {
+            public void changedUpdate(DocumentEvent e) {
+                OnChange();
+            }
+            public void removeUpdate(DocumentEvent e) {
+                OnChange();
+            }
+            public void insertUpdate(DocumentEvent e) {
+                OnChange();
+            }
+            public void OnChange() {
+                var txt = txtSearch.getText().toLowerCase();
+                if (txt.length() == 0) {
+                    sorter.setRowFilter(null);
+                } else {
+                    try {
+                        sorter.setRowFilter(RowFilter.regexFilter("^(?i)" + txt, SearchColumnIndex));
+                    } catch (PatternSyntaxException pse) {
+                        System.out.println("Bad regex pattern");
+                    }
+                }
+
+            }
+        });
+    }
+	
 	
 	//clears text fields in first form
 	public void clearFirstForm() {
