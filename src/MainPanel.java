@@ -409,6 +409,12 @@ public class MainPanel extends JFrame implements ChangeListener{
 		salePanel.add(searchPanelSale);
 	    
 		
+		//--Search by 2 criteria panel
+		JPanel upPanelCriteria = new JPanel();
+		JPanel downPanelCriteria = new JPanel();
+		JLabel selectCriteria = new JLabel("Избери таблица и критерии,по които да търсиш:");
+		upPanelCriteria.add(selectCriteria);
+		searchPanel.add(upPanelCriteria);
 		
 		carSelectTable.addMouseListener(new TableListener());
 		salesTable.addMouseListener(new TableListener());
