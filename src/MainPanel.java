@@ -8,6 +8,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 
@@ -60,7 +61,9 @@ public class MainPanel extends JFrame implements ChangeListener{
 	JTable carTable = new JTable();
 	JTable carSelectTable = new JTable();
 	JTable salesTable = new JTable();
+	
 	JScrollPane scrollerSales = new JScrollPane(salesTable);
+	
 	JScrollPane scrollerCar = new JScrollPane(carTable);
 	JScrollPane scrollerCarSale = new JScrollPane(carSelectTable);
 	JTabbedPane tab = new JTabbedPane();
@@ -418,7 +421,7 @@ public class MainPanel extends JFrame implements ChangeListener{
 		//--Search by 2 criteria panel
 		JPanel upPanelCriteria = new JPanel();
 		JPanel downPanelCriteria = new JPanel();
-		upPanelCriteria.setLayout(new GridLayout(3,1));
+		upPanelCriteria.setLayout(new GridLayout(6,1));
 		JLabel selectCriteria = new JLabel("Избери таблица и критерии,по които да търсиш:");
 		selectCriteria.setFont(selectCriteria.getFont().deriveFont(25.0f));
 		JLabel selectTableCriteria = new JLabel("Избери таблица,в която да търсиш:");
@@ -430,8 +433,11 @@ public class MainPanel extends JFrame implements ChangeListener{
 		upPanelCriteria.add(tablesCombo);
 		upPanelCriteria.add(searchCriteriaTF);
 		AddFilter(brandTable, searchCriteriaTF, 1);
-		searchPanel.add(upPanelCriteria);
+		//downPanelCriteria.add(brandCriteria);
+		//brandTable.setPreferredSize(new Dimension(550,100));
 		
+		searchPanel.add(upPanelCriteria);
+		searchPanel.add(downPanelCriteria);
 		carSelectTable.addMouseListener(new TableListener());
 		salesTable.addMouseListener(new TableListener());
 		tab.addChangeListener(this);
@@ -441,9 +447,9 @@ public class MainPanel extends JFrame implements ChangeListener{
 	
 	public static void AddFilter(JTable tbl, JTextField txtSearch, Integer SearchColumnIndex) {
 
-        DefaultTableModel model = (DefaultTableModel) tbl.getModel();
+        AbstractTableModel model =  (AbstractTableModel) tbl.getModel();
 
-        final TableRowSorter< DefaultTableModel> sorter = new TableRowSorter< DefaultTableModel>(model);
+        final TableRowSorter<AbstractTableModel > sorter = new TableRowSorter<AbstractTableModel >(model);
         tbl.setRowSorter(sorter);
 
         txtSearch.getDocument().addDocumentListener(new DocumentListener() {
@@ -462,7 +468,13 @@ public class MainPanel extends JFrame implements ChangeListener{
                     sorter.setRowFilter(null);
                 } else {
                     try {
-                        sorter.setRowFilter(RowFilter.regexFilter("^(?i)" + txt, SearchColumnIndex));
+                    	if(currentTab == 0) {
+                    		sorter.setRowFilter(RowFilter.regexFilter("^(?i)\\w+", SearchColumnIndex));
+                    	}
+                    	else {
+                    		sorter.setRowFilter(RowFilter.regexFilter("^(?i)" + txt, SearchColumnIndex));
+                    	}
+                        
                     } catch (PatternSyntaxException pse) {
                         System.out.println("Bad regex pattern");
                     }
