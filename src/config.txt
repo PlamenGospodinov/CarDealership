@@ -1,0 +1,3 @@
+jdbc:h2:C:\Users\Plamen\git\CarDealership\CarDealership\CarDealershipDB;AUTO_SERVER=TRUE
+sa
+sa
