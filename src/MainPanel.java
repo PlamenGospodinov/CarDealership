@@ -23,6 +23,7 @@ import java.awt.event.MouseListener;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.text.ParseException;
@@ -51,7 +52,7 @@ public class MainPanel extends JFrame implements ChangeListener{
 	static int selectedTab = 0;
 	static int currentTab = 0;
 	static String selected;
-	
+	ResultSet result = null;
 	
 	PreparedStatement state = null;
 	
@@ -61,6 +62,9 @@ public class MainPanel extends JFrame implements ChangeListener{
 	JTable carTable = new JTable();
 	JTable carSelectTable = new JTable();
 	JTable salesTable = new JTable();
+	
+	JTable probaTable = new JTable();
+	JScrollPane probaScroll = new JScrollPane(probaTable);
 	
 	JScrollPane scrollerSales = new JScrollPane(salesTable);
 	
@@ -155,6 +159,7 @@ public class MainPanel extends JFrame implements ChangeListener{
         JTabbedPane tabbedPane = (JTabbedPane) e.getSource();
         selectedTab = tabbedPane.getSelectedIndex();
         currentTab = selectedTab;
+        
     }
 	
 	
@@ -236,11 +241,15 @@ public class MainPanel extends JFrame implements ChangeListener{
 		
 		
 		//downPanel of brandConfig
+		scroller.setPreferredSize(new Dimension(760,170));
 		downPanel.add(scroller);
+		brandTable.setModel(DBBrandHelper.getAllData());
 		brandConfig.add(downPanel);
 		
 		scroller.setPreferredSize(new Dimension(760,170));
-		brandTable.setModel(DBBrandHelper.getAllData());
+		//brandTable.setModel(DBBrandHelper.getAllData());
+		//DBBrandHelper.refreshTable("BRANDS", brandTable);
+		
 		brandTable.addMouseListener(new TableListener());
 		//-------------------------------------------------
 		
@@ -432,7 +441,7 @@ public class MainPanel extends JFrame implements ChangeListener{
 		upPanelCriteria.add(selectTableCriteria);
 		upPanelCriteria.add(tablesCombo);
 		upPanelCriteria.add(searchCriteriaTF);
-		AddFilter(brandTable, searchCriteriaTF, 1);
+		//AddFilter(probaTable, searchCriteriaTF, 1);
 		//downPanelCriteria.add(brandCriteria);
 		//brandTable.setPreferredSize(new Dimension(550,100));
 		
@@ -508,6 +517,7 @@ public class MainPanel extends JFrame implements ChangeListener{
 	}
 	
 	
+	
 	//------------------------------------------
 	//class with addBtn Action
 	class AddAction implements ActionListener{
@@ -516,6 +526,7 @@ public class MainPanel extends JFrame implements ChangeListener{
 		public void actionPerformed(ActionEvent arg0) {
 			
 			if(currentTab == 0) {
+				
 				conn = DBBrandHelper.getConnection();
 				String sql = "insert into BRANDS values(null,?,?)";
 				try {
@@ -524,6 +535,7 @@ public class MainPanel extends JFrame implements ChangeListener{
 					state.setString(2, countryOfOriginTF.getText());
 					
 					state.execute();
+					//
 					brandTable.setModel(DBBrandHelper.getAllData());
 					
 					//getting all the brands again
@@ -546,13 +558,15 @@ public class MainPanel extends JFrame implements ChangeListener{
 					}
 				}
 				clearFirstForm();
+				
 			}
+			
 			else if(currentTab == 1) {
 				conn = DBCarHelper.getConnection();
 				String sql = "insert into CARS values(null,?,?,?,?,?)";
 				try {
 					state = conn.prepareStatement(sql);
-					state.setString(1, brandCombo.getSelectedItem().toString());
+					state.setInt(1, DBCarHelper.getBrandData(brandCombo.getSelectedItem().toString())); //brandCombo.getSelectedItem().toString()
 					state.setString(2, modelCarTF.getText());
 					state.setInt(3, Integer.parseInt(yearCarTF.getText()));
 					state.setFloat(4, Float.parseFloat(priceCarTF.getText()));
@@ -633,6 +647,8 @@ public class MainPanel extends JFrame implements ChangeListener{
 				
 				clearThirdForm();
 			}
+			
+			//
 		}
 		
 	}
@@ -654,6 +670,7 @@ public class MainPanel extends JFrame implements ChangeListener{
 					
 					state = conn.prepareStatement(sql);
 					state.setInt(1, id);
+					System.out.println(id);
 					state.execute();
 					
 					
@@ -744,7 +761,7 @@ public class MainPanel extends JFrame implements ChangeListener{
 			else if(currentTab == 1) {
 				// TODO Auto-generated method stub
 				conn = DBBrandHelper.getConnection();
-				String sql = "UPDATE CARS SET BRAND = \'" + brandCombo.getSelectedItem().toString() + "\', MODEL = \'"  + modelCarTF.getText() + "\', YEAR = \'"  + yearCarTF.getText() + "\', PRICE = \'"  + priceCarTF.getText() + "\', COMMENT = \'"  + commentTF.getText() + "\' WHERE CARID=?;";
+				String sql = "UPDATE CARS SET BRANDID = \'" + DBCarHelper.getBrandData(brandCombo.getSelectedItem().toString()) + "\', MODEL = \'"  + modelCarTF.getText() + "\', YEAR = \'"  + yearCarTF.getText() + "\', PRICE = \'"  + priceCarTF.getText() + "\', COMMENT = \'"  + commentTF.getText() + "\' WHERE CARID=?;";
 				try {
 					state = conn.prepareStatement(sql);
 					state.setInt(1, id);
@@ -901,6 +918,7 @@ public class MainPanel extends JFrame implements ChangeListener{
     }
 	
     //-------TABLELISTENER FOR MOUSE COMMANDS-------------
+
 	class TableListener implements MouseListener{
 
 		@Override

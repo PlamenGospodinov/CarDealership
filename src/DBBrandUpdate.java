@@ -5,44 +5,26 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 
-
-public class DBSaleHelper {
+public class DBBrandUpdate {
 	
-	static Connection conn = null;
+	static Connection conn = getConnection();
 	static PreparedStatement state = null;
-	static SaleModel model = null;
+	static MyModel model = null;
 	static ResultSet result = null;
 	
-	static SaleModel getAllData() {
+	static ArrayList<String> firstCol = new ArrayList<String>();
+	
+	static MyModel getAllData() {
 		conn = getConnection();
-		String sql = "SELECT*FROM SALES";
+		String sql = "SELECT ID,BRAND,COUNTRY FROM BRANDS";
 		try {
 			state = conn.prepareStatement(sql);
 			result = state.executeQuery();
-			model = new SaleModel(result);
-			
-			
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return model;
-	}
-	
-	
-	static SaleModel getSearchData(String firstName) {
-		conn = getConnection();
-		String sql = "SELECT * FROM SALES WHERE FIRSTNAME = \'" + firstName + "\'";
-		try {
-			state = conn.prepareStatement(sql);
-			result = state.executeQuery();
-			model = new SaleModel(result);
+			model = new MyModel(result);
 			
 			
 		} catch (SQLException e) {
@@ -58,7 +40,6 @@ public class DBSaleHelper {
 	
 	static Connection getConnection() {
 		try {
-			Class.forName("org.h2.Driver");
 			File file = new File("C:\\Users\\Plamen\\git\\CarDealership\\CarDealership\\src\\config.txt");
 			Scanner sc = new Scanner(file);
 			String connString = "",username = "",password = "";
