@@ -428,22 +428,18 @@ public class MainPanel extends JFrame implements ChangeListener{
 	    
 		
 		//--Search by 2 criteria panel
+		searchPanel.setLayout(new GridLayout(3,1));
+		JPanel headerPanel = new JPanel();
 		JPanel upPanelCriteria = new JPanel();
 		JPanel downPanelCriteria = new JPanel();
-		upPanelCriteria.setLayout(new GridLayout(6,1));
-		JLabel selectCriteria = new JLabel("Избери таблица и критерии,по които да търсиш:");
-		selectCriteria.setFont(selectCriteria.getFont().deriveFont(25.0f));
-		JLabel selectTableCriteria = new JLabel("Избери таблица,в която да търсиш:");
-		String[] chooseTable = {"Коли", "Продажби"};
-		JComboBox<String> tablesCombo = new JComboBox<>(chooseTable);
+		upPanelCriteria.setLayout(new GridLayout(3,2));
+		JLabel selectCriteriaLabel = new JLabel("Избери таблица и критерии,по които да търсиш:");
+		selectCriteriaLabel.setFont(selectCriteriaLabel.getFont().deriveFont(25.0f));
 		JTextField searchCriteriaTF = new JTextField();
-		upPanelCriteria.add(selectCriteria);
-		upPanelCriteria.add(selectTableCriteria);
-		upPanelCriteria.add(tablesCombo);
+		headerPanel.add(selectCriteriaLabel);
+		
 		upPanelCriteria.add(searchCriteriaTF);
-		//AddFilter(probaTable, searchCriteriaTF, 1);
-		//downPanelCriteria.add(brandCriteria);
-		//brandTable.setPreferredSize(new Dimension(550,100));
+		
 		
 		searchPanel.add(upPanelCriteria);
 		searchPanel.add(downPanelCriteria);
@@ -454,44 +450,7 @@ public class MainPanel extends JFrame implements ChangeListener{
 	}
 	//----------------------------------------
 	
-	public static void AddFilter(JTable tbl, JTextField txtSearch, Integer SearchColumnIndex) {
-
-        AbstractTableModel model =  (AbstractTableModel) tbl.getModel();
-
-        final TableRowSorter<AbstractTableModel > sorter = new TableRowSorter<AbstractTableModel >(model);
-        tbl.setRowSorter(sorter);
-
-        txtSearch.getDocument().addDocumentListener(new DocumentListener() {
-            public void changedUpdate(DocumentEvent e) {
-                OnChange();
-            }
-            public void removeUpdate(DocumentEvent e) {
-                OnChange();
-            }
-            public void insertUpdate(DocumentEvent e) {
-                OnChange();
-            }
-            public void OnChange() {
-                var txt = txtSearch.getText().toLowerCase();
-                if (txt.length() == 0) {
-                    sorter.setRowFilter(null);
-                } else {
-                    try {
-                    	if(currentTab == 0) {
-                    		sorter.setRowFilter(RowFilter.regexFilter("^(?i)\\w+", SearchColumnIndex));
-                    	}
-                    	else {
-                    		sorter.setRowFilter(RowFilter.regexFilter("^(?i)" + txt, SearchColumnIndex));
-                    	}
-                        
-                    } catch (PatternSyntaxException pse) {
-                        System.out.println("Bad regex pattern");
-                    }
-                }
-
-            }
-        });
-    }
+	
 	
 	
 	//clears text fields in first form
@@ -513,7 +472,7 @@ public class MainPanel extends JFrame implements ChangeListener{
 	public void clearThirdForm() {
 		firstNameTF.setText("");
 		lastNameTF.setText("");
-		priceCarTF.setText("");
+		salePriceTF.setText("");
 	}
 	
 	
@@ -600,7 +559,7 @@ public class MainPanel extends JFrame implements ChangeListener{
 			}
 			else if(currentTab == 2) {
 				conn = DBSaleHelper.getConnection();
-				String sql = "insert into SALES values(null,?,?,?,?,?,?,?)";
+				String sql = "insert into SALES values(null,?,?,?,?,?,?)";
 				String dateString = cbYears.getSelectedItem().toString() + "-" + cbMonths.getSelectedItem().toString() + "-" + cbDays.getSelectedItem().toString();
 				java.util.Date utilDate = null;
 				try {
@@ -615,7 +574,7 @@ public class MainPanel extends JFrame implements ChangeListener{
 				
 				
 				try {
-					String car = carSelectTable.getValueAt(row, 1).toString() +" "+ carSelectTable.getValueAt(row, 2).toString();
+					
 					state = conn.prepareStatement(sql);
 					state.setInt(1, Integer.parseInt(carSelectTable.getValueAt(row, 0).toString()));
 					state.setDate(2, sqlDate);
@@ -623,7 +582,7 @@ public class MainPanel extends JFrame implements ChangeListener{
 					state.setString(4, lastNameTF.getText());
 					state.setFloat(5, Float.parseFloat(salePriceTF.getText()));
 					state.setFloat(6, difference);
-					state.setString(7, car);
+					
 					
 					
 					state.execute();
@@ -670,7 +629,7 @@ public class MainPanel extends JFrame implements ChangeListener{
 					
 					state = conn.prepareStatement(sql);
 					state.setInt(1, id);
-					System.out.println(id);
+					
 					state.execute();
 					
 					
@@ -787,7 +746,7 @@ public class MainPanel extends JFrame implements ChangeListener{
 			    java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
 				
 				float difference = Float.parseFloat(carSelectTable.getValueAt(row, 4).toString()) - Float.parseFloat(salePriceTF.getText());
-				String sql = "UPDATE SALES SET FIRSTNAME = \'"+ firstNameTF.getText() + "\', LASTNAME = \'" + lastNameTF.getText() + "\', SALEDATE = \'" + sqlDate + "\',PRICE = " +Float.parseFloat(salePriceTF.getText()) +" , DIFFERENCE = "+ difference + " WHERE SALEID=?;";
+				String sql = "UPDATE SALES SET FIRSTNAME = \'"+ firstNameTF.getText() + "\', LASTNAME = \'" + lastNameTF.getText() + "\', SALEDATE = \'" + sqlDate + "\',SALEPRICE = " +Float.parseFloat(salePriceTF.getText()) +" , DIFFERENCE = "+ difference + " WHERE SALEID=?;";
 				try {
 					state = conn.prepareStatement(sql);
 					state.setInt(1, saleId);
@@ -969,9 +928,9 @@ public class MainPanel extends JFrame implements ChangeListener{
 			    }
 			    else if(currentTab == 2) {
 			    	
-			    	firstNameTF.setText(salesTable.getValueAt(row, 3).toString());
-			    	lastNameTF.setText(salesTable.getValueAt(row, 4).toString());
-			    	salePriceTF.setText(salesTable.getValueAt(row, 5).toString());
+			    	firstNameTF.setText(salesTable.getValueAt(row, 4).toString());
+			    	lastNameTF.setText(salesTable.getValueAt(row, 5).toString());
+			    	salePriceTF.setText(salesTable.getValueAt(row, 6).toString());
 			    }
 			    
 			    

@@ -18,7 +18,14 @@ public class DBSaleHelper {
 	
 	static SaleModel getAllData() {
 		conn = getConnection();
-		String sql = "SELECT*FROM SALES";
+		String sql = "SELECT S.SALEID,B.BRAND,"
+				+ "C.MODEL,S.SALEDATE,S.FIRSTNAME,"
+				+ "S.LASTNAME,S.SALEPRICE,"
+				+ "S.DIFFERENCE "
+				+ "FROM SALES S JOIN CARS C "
+				+ "ON S.CARID = C.CARID "
+				+ "JOIN BRANDS B "
+				+ "ON C.BRANDID = B.ID";
 		try {
 			state = conn.prepareStatement(sql);
 			result = state.executeQuery();
@@ -38,7 +45,15 @@ public class DBSaleHelper {
 	
 	static SaleModel getSearchData(String firstName) {
 		conn = getConnection();
-		String sql = "SELECT * FROM SALES WHERE FIRSTNAME = \'" + firstName + "\'";
+		String sql = "SELECT S.SALEID,B.BRAND,"
+				+ "C.MODEL,S.SALEDATE,S.FIRSTNAME,"
+				+ "S.LASTNAME,S.SALEPRICE,"
+				+ "S.DIFFERENCE "
+				+ "FROM SALES S JOIN CARS C "
+				+ "ON S.CARID = C.CARID "
+				+ "JOIN BRANDS B "
+				+ "ON C.BRANDID = B.ID WHERE FIRSTNAME = \'" + firstName + "\'";
+		
 		try {
 			state = conn.prepareStatement(sql);
 			result = state.executeQuery();
