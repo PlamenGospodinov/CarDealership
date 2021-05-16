@@ -18,7 +18,8 @@ public class DBBrandHelper {
 	static MyModel model = null;
 	static ResultSet result = null;
 	
-	static ArrayList<String> firstCol = new ArrayList<String>();
+	static ArrayList<String> brandsList = new ArrayList<String>();
+	static ArrayList<String> modelsList = new ArrayList<String>();
 	
 	 public static void refreshTable(String name, JTable table) {
 		conn=DBBrandHelper.getConnection();
@@ -86,7 +87,7 @@ public class DBBrandHelper {
 			state = conn.prepareStatement(sql);
 			result = state.executeQuery();
 			model = new MyModel(result);
-			firstCol = model.getBrands();
+			brandsList = model.getBrands();
 			
 			
 		} catch (SQLException e) {
@@ -96,7 +97,27 @@ public class DBBrandHelper {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return firstCol;
+		return brandsList;
+	}
+	
+	static ArrayList<String> getModelData() {
+		//conn = getConnection();
+		String sql = "SELECT MODEL FROM CARS";
+		try {
+			state = conn.prepareStatement(sql);
+			result = state.executeQuery();
+			model = new MyModel(result);
+			
+			
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return modelsList;
 	}
 	
 	

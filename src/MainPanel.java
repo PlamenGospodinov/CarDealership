@@ -52,6 +52,7 @@ public class MainPanel extends JFrame implements ChangeListener{
 	static int selectedTab = 0;
 	static int currentTab = 0;
 	static String selected;
+	
 	ResultSet result = null;
 	
 	PreparedStatement state = null;
@@ -132,10 +133,15 @@ public class MainPanel extends JFrame implements ChangeListener{
 	//----------------------------------
 	//TextFields and ComboBox of carConfig
 	static ArrayList<String> brandList = DBBrandHelper.getBrandData(); 
+	
 	static String[] array = brandList.toArray(new String[brandList.size()]);
+	
 	//static JComboBox brandCombo = new JComboBox(array);
 	DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>(array);
+	
     JComboBox<String> brandCombo = new JComboBox<>(model);
+    JComboBox<String> brandCriteriaCombo = new JComboBox<>(model);
+    
     
 	JTextField modelCarTF = new JTextField();
 	JTextField yearCarTF = new JTextField();
@@ -428,20 +434,36 @@ public class MainPanel extends JFrame implements ChangeListener{
 	    
 		
 		//--Search by 2 criteria panel
-		searchPanel.setLayout(new GridLayout(3,1));
+		searchPanel.setLayout(new GridLayout(8,1));
 		JPanel headerPanel = new JPanel();
 		JPanel upPanelCriteria = new JPanel();
 		JPanel downPanelCriteria = new JPanel();
 		upPanelCriteria.setLayout(new GridLayout(3,2));
-		JLabel selectCriteriaLabel = new JLabel("Избери таблица и критерии,по които да търсиш:");
-		selectCriteriaLabel.setFont(selectCriteriaLabel.getFont().deriveFont(25.0f));
-		JTextField searchCriteriaTF = new JTextField();
-		headerPanel.add(selectCriteriaLabel);
+		JLabel carCriteriaLabel = new JLabel("          Търсене в таблица с автомобили:");
+		JLabel saleCriteriaLabel = new JLabel("          Търсене в таблица с продажби:");
+		JLabel emptyCriteriaLabel = new JLabel("");
+		JLabel brandCriteriaLabel = new JLabel("Въведи марка на автомобила:");
+		JLabel modelCriteriaLabel = new JLabel("Въведи модел на автомобила:");
+		JButton carSearchBtn = new JButton("Търси в таблица автомобили");
 		
-		upPanelCriteria.add(searchCriteriaTF);
+		carCriteriaLabel.setFont(carCriteriaLabel.getFont().deriveFont(35.0f));
+		saleCriteriaLabel.setFont(saleCriteriaLabel.getFont().deriveFont(35.0f));
+		brandCriteriaLabel.setFont(brandCriteriaLabel.getFont().deriveFont(15.0f));
+		modelCriteriaLabel.setFont(modelCriteriaLabel.getFont().deriveFont(15.0f));
+		JTextField modelCriteriaTF = new JTextField();
+		headerPanel.add(carCriteriaLabel);
 		
+		searchPanel.add(carCriteriaLabel);
+		//upPanelCriteria.add(carCriteriaLabel);
+		//upPanelCriteria.add(emptyCriteriaLabel);
+		upPanelCriteria.add(brandCriteriaLabel);
+		upPanelCriteria.add(brandCriteriaCombo);
+		upPanelCriteria.add(modelCriteriaLabel);
+		upPanelCriteria.add(modelCriteriaTF);
 		
 		searchPanel.add(upPanelCriteria);
+		searchPanel.add(carSearchBtn);
+		searchPanel.add(saleCriteriaLabel);
 		searchPanel.add(downPanelCriteria);
 		carSelectTable.addMouseListener(new TableListener());
 		salesTable.addMouseListener(new TableListener());
@@ -534,6 +556,7 @@ public class MainPanel extends JFrame implements ChangeListener{
 					state.execute();
 					carTable.setModel(DBCarHelper.getAllData());
 					carSelectTable.setModel(DBCarHelper.getAllData());
+					
 					/*brandTable.setModel(DBBrandHelper.getAllData());
 					
 					//getting all the brands again
@@ -728,6 +751,8 @@ public class MainPanel extends JFrame implements ChangeListener{
 					id = -1;
 					carTable.setModel(DBCarHelper.getAllData());
 					
+					//int index = brandList.indexOf(selected);
+					
 				} catch (SQLException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -892,6 +917,7 @@ public class MainPanel extends JFrame implements ChangeListener{
 				//continue from here
 				row = carTable.getSelectedRow();
 				selected = (String)carTable.getValueAt(row, 1);
+				
 				id = Integer.parseInt(carTable.getValueAt(row, 0).toString());
 				
 			}
@@ -905,6 +931,7 @@ public class MainPanel extends JFrame implements ChangeListener{
 				catch(Exception e1){
 					row = carSelectTable.getSelectedRow();
 					selected = (String)carSelectTable.getValueAt(row, 1);
+					
 					id = Integer.parseInt(carTable.getValueAt(row, 0).toString());
 					
 					
