@@ -17,6 +17,7 @@ public class MyModel extends AbstractTableModel {
 	private int columnCount;
 	private ArrayList<Object> data=new ArrayList<Object>();
 	private ArrayList<String> brands=new ArrayList<String>();
+	
 	 
 	 public MyModel(ResultSet rs) throws Exception
 	 {
@@ -37,6 +38,7 @@ public class MyModel extends AbstractTableModel {
 			 for(int j=0;j<columnCount;j++){
 			 row[j]=rs.getObject(j+1);
 			 brands.add(rs.getString("BRAND"));
+			 //models.add(rs.getString("MODEL"));
 			 }		
 			
 			 data.add(row);
@@ -55,6 +57,8 @@ public class MyModel extends AbstractTableModel {
 	 public ArrayList<String> getBrands(){
 		 return brands;
 	 }
+	 
+	 
 	 
 	 
 	 
