@@ -87,6 +87,30 @@ public class DBCarHelper {
 	}
 	
 	
+	//SEARCH DATA FOR THE LAST TAB
+	static MyModel getSearchCriteriaData(String brand,String carModel) {
+		conn = getConnection();
+		String sql = "SELECT CARS.CARID,BRANDS.BRAND,CARS.MODEL,CARS.YEAR,CARS.PRICE,CARS.COMMENT\r\n"
+				+ "FROM CARS JOIN BRANDS \r\n"
+				+ "ON CARS.BRANDID = BRANDS.ID\r\n"
+				+  " WHERE BRANDS.BRAND = \'" + brand + "\' AND CARS.MODEL = \'" + carModel + "\'" 
+					+ " ORDER BY CARS.MODEL";
+		try {
+			state = conn.prepareStatement(sql);
+			result = state.executeQuery();
+			model = new MyModel(result);
+			
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return model;
+	}
+	
 	
 	static Connection getConnection() {
 		try {
