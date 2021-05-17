@@ -197,6 +197,13 @@ public class MainPanel extends JFrame implements ChangeListener{
 	//---Search Field sale Panel
 	JTextField searchField = new JTextField();
 	
+	
+	
+	
+	JTextField modelCriteriaTF;
+	JTextField modelCriteriaTF2;
+	JTextField nameCriteriaTF;
+	
 	//-------------------MAIN PANEL------------------------------
 	public MainPanel() {
 		
@@ -437,7 +444,7 @@ public class MainPanel extends JFrame implements ChangeListener{
 	    
 		
 		//--Search by 2 criteria panel
-		searchPanel.setLayout(new GridLayout(7,1));
+		searchPanel.setLayout(new GridLayout(6,1));
 		JPanel headerPanel = new JPanel();
 		JPanel upPanelCriteria = new JPanel();
 		JPanel downPanelCriteria = new JPanel();
@@ -448,15 +455,15 @@ public class MainPanel extends JFrame implements ChangeListener{
 		
 		JLabel brandCriteriaLabel = new JLabel("Въведи марка на автомобила:");
 		JLabel modelCriteriaLabel = new JLabel("Въведи модел на автомобила:");
-		JTextField modelCriteriaTF = new JTextField();
+		modelCriteriaTF = new JTextField();
 		JButton carSearchBtn = new JButton("Търси в таблица автомобили");
 		JButton carCriteriaCancelBtn = new JButton("Отмяна на търсене");
 		//---------------------
 		JLabel brandCriteriaLabel2 = new JLabel("Въведи марка на автомобила:");
 		JLabel modelCriteriaLabel2 = new JLabel("Въведи модел на автомобила:");
-		JTextField modelCriteriaTF2 = new JTextField();
+		modelCriteriaTF2 = new JTextField();
 		JLabel nameCriteriaLabel = new JLabel("Въведи първото име на клиента:");
-		JTextField nameCriteriaTF = new JTextField();
+		nameCriteriaTF = new JTextField();
 		JButton saleCriteriaSearchBtn = new JButton("Търси в таблица продажби");
 		JButton saleCriteriaCancelBtn = new JButton("Отмяна на търсене");
 		
@@ -485,6 +492,14 @@ public class MainPanel extends JFrame implements ChangeListener{
 		downPanelCriteria.add(nameCriteriaTF);
 		downPanelCriteria.add(saleCriteriaSearchBtn);
 		downPanelCriteria.add(saleCriteriaCancelBtn);
+		carSearchBtn.setBackground(Color.LIGHT_GRAY);
+		carCriteriaCancelBtn.setBackground(new Color(255,138,138));
+		saleCriteriaSearchBtn.setBackground(new Color(44,204,255));
+		saleCriteriaCancelBtn.setBackground(new Color(104,244,55));
+		carSearchBtn.addActionListener(new SearchCarCriteriaAction());
+		carCriteriaCancelBtn.addActionListener(new SearchCarCriteriaCancelAction());
+		saleCriteriaSearchBtn.addActionListener(new SearchSaleCriteriaAction());
+		saleCriteriaCancelBtn.addActionListener(new SearchSaleCriteriaCancelAction());
 		searchPanel.add(upPanelCriteria);
 		searchPanel.add(carCriteriaScroll);
 		searchPanel.add(saleCriteriaLabel);
@@ -708,7 +723,7 @@ public class MainPanel extends JFrame implements ChangeListener{
 					
 					
 					carTable.setModel(DBCarHelper.getAllData());
-					
+					carCriteriaTable.setModel(DBCarHelper.getAllData());
 					id = -1;
 				    
 				} catch (SQLException e1) {
@@ -729,7 +744,7 @@ public class MainPanel extends JFrame implements ChangeListener{
 					
 					
 					salesTable.setModel(DBSaleHelper.getAllData());
-					
+					saleCriteriaTable.setModel(DBSaleHelper.getAllData());
 					id = -1;
 				    
 				} catch (SQLException e1) {
@@ -777,7 +792,7 @@ public class MainPanel extends JFrame implements ChangeListener{
 					state.execute();
 					id = -1;
 					carTable.setModel(DBCarHelper.getAllData());
-					
+					carCriteriaTable.setModel(DBCarHelper.getAllData());
 					//int index = brandList.indexOf(selected);
 					
 				} catch (SQLException e1) {
@@ -805,7 +820,7 @@ public class MainPanel extends JFrame implements ChangeListener{
 					state.execute();
 					id = -1;
 					salesTable.setModel(DBSaleHelper.getAllData());
-					
+					saleCriteriaTable.setModel(DBSaleHelper.getAllData());
 				} catch (SQLException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -927,6 +942,122 @@ public class MainPanel extends JFrame implements ChangeListener{
 		}
     	
     }
+    
+    
+    class SearchCarCriteriaAction implements ActionListener{
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
+				conn = DBCarHelper.getConnection();
+				//String sql = "SELECT * FROM BRANDS WHERE COUNTRY = \'" + searchByCountryTF.getText() + "\';";
+				
+				String sql = "SELECT CARS.CARID,BRANDS.BRAND,CARS.MODEL,CARS.YEAR,CARS.PRICE,CARS.COMMENT\r\n"
+						+ "FROM CARS JOIN BRANDS \r\n"
+						+ "ON CARS.BRANDID = BRANDS.ID\r\n"
+						+  " WHERE BRANDS.BRAND = \'" + brandCriteriaCombo.getSelectedItem().toString() + "\' AND CARS.MODEL = \'" + modelCriteriaTF.getText() + "\'"
+							+ " ORDER BY CARS.MODEL";
+				
+				try {
+					state = conn.prepareStatement(sql);
+					state.execute();	
+					carCriteriaTable.setModel(DBCarHelper.getSearchCriteriaData(brandCriteriaCombo.getSelectedItem().toString(),modelCriteriaTF.getText()));
+					
+					
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			
+		}
+    	
+    }
+    
+    class SearchCarCriteriaCancelAction implements ActionListener{
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
+				conn = DBCarHelper.getConnection();
+				//String sql = "SELECT * FROM BRANDS WHERE COUNTRY = \'" + searchByCountryTF.getText() + "\';";
+				
+				String sql = "SELECT * FROM CARS";
+				
+				try {
+					state = conn.prepareStatement(sql);
+					state.execute();	
+					carCriteriaTable.setModel(DBCarHelper.getAllData());
+					
+					
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			
+		}
+    	
+    }
+    
+    
+    
+    class SearchSaleCriteriaAction implements ActionListener{
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
+				conn = DBCarHelper.getConnection();
+				//String sql = "SELECT * FROM BRANDS WHERE COUNTRY = \'" + searchByCountryTF.getText() + "\';";
+				
+				String sql = "SELECT S.SALEID,B.BRAND,"
+						+ "C.MODEL,S.SALEDATE,S.FIRSTNAME,"
+						+ "S.LASTNAME,S.SALEPRICE,"
+						+ "S.DIFFERENCE "
+						+ "FROM SALES S JOIN CARS C "
+						+ "ON S.CARID = C.CARID "
+						+ "JOIN BRANDS B "
+						+ "ON C.BRANDID = B.ID WHERE S.FIRSTNAME = \'" + nameCriteriaTF.getText() + "\' AND C.MODEL = \'" + modelCriteriaTF2.getText() + "\' AND B.BRAND = \'" + brandCriteriaCombo2.getSelectedItem().toString() + "\'";
+				
+				try {
+					state = conn.prepareStatement(sql);
+					state.execute();	
+					saleCriteriaTable.setModel(DBSaleHelper.getSearchCriteriaData(brandCriteriaCombo2.getSelectedItem().toString(),modelCriteriaTF2.getText(),nameCriteriaTF.getText()));
+					
+					
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			
+		}
+    	
+    }
+    
+    class SearchSaleCriteriaCancelAction implements ActionListener{
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
+				conn = DBSaleHelper.getConnection();
+				//String sql = "SELECT * FROM BRANDS WHERE COUNTRY = \'" + searchByCountryTF.getText() + "\';";
+				
+				String sql = "SELECT * FROM SALES";
+				
+				try {
+					state = conn.prepareStatement(sql);
+					state.execute();	
+					saleCriteriaTable.setModel(DBSaleHelper.getAllData());
+					
+					
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			
+		}
+    	
+    }
+    
+    
 	
     //-------TABLELISTENER FOR MOUSE COMMANDS-------------
 

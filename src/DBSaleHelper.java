@@ -70,6 +70,33 @@ public class DBSaleHelper {
 		return model;
 	}
 	
+	static SaleModel getSearchCriteriaData(String brand,String carModel,String firstName) {
+		conn = getConnection();
+		String sql = "SELECT S.SALEID,B.BRAND,"
+				+ "C.MODEL,S.SALEDATE,S.FIRSTNAME,"
+				+ "S.LASTNAME,S.SALEPRICE,"
+				+ "S.DIFFERENCE "
+				+ "FROM SALES S JOIN CARS C "
+				+ "ON S.CARID = C.CARID "
+				+ "JOIN BRANDS B "
+				+ "ON C.BRANDID = B.ID WHERE S.FIRSTNAME = \'" + firstName + "\' AND C.MODEL = \'" + carModel + "\' AND B.BRAND = \'" + brand + "\'";
+		
+		try {
+			state = conn.prepareStatement(sql);
+			result = state.executeQuery();
+			model = new SaleModel(result);
+			
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return model;
+	}
+	
 	
 	static Connection getConnection() {
 		try {
