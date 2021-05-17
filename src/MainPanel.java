@@ -64,8 +64,10 @@ public class MainPanel extends JFrame implements ChangeListener{
 	JTable carSelectTable = new JTable();
 	JTable salesTable = new JTable();
 	
-	JTable probaTable = new JTable();
-	JScrollPane probaScroll = new JScrollPane(probaTable);
+	JTable carCriteriaTable = new JTable();
+	JScrollPane carCriteriaScroll = new JScrollPane(carCriteriaTable);
+	JTable saleCriteriaTable = new JTable();
+	JScrollPane saleCriteriaScroll = new JScrollPane(saleCriteriaTable);
 	
 	JScrollPane scrollerSales = new JScrollPane(salesTable);
 	
@@ -141,6 +143,7 @@ public class MainPanel extends JFrame implements ChangeListener{
 	
     JComboBox<String> brandCombo = new JComboBox<>(model);
     JComboBox<String> brandCriteriaCombo = new JComboBox<>(model);
+    JComboBox<String> brandCriteriaCombo2 = new JComboBox<>(model);
     
     
 	JTextField modelCarTF = new JTextField();
@@ -434,37 +437,59 @@ public class MainPanel extends JFrame implements ChangeListener{
 	    
 		
 		//--Search by 2 criteria panel
-		searchPanel.setLayout(new GridLayout(8,1));
+		searchPanel.setLayout(new GridLayout(7,1));
 		JPanel headerPanel = new JPanel();
 		JPanel upPanelCriteria = new JPanel();
 		JPanel downPanelCriteria = new JPanel();
 		upPanelCriteria.setLayout(new GridLayout(3,2));
+		downPanelCriteria.setLayout(new GridLayout(4,2));
 		JLabel carCriteriaLabel = new JLabel("          Търсене в таблица с автомобили:");
 		JLabel saleCriteriaLabel = new JLabel("          Търсене в таблица с продажби:");
-		JLabel emptyCriteriaLabel = new JLabel("");
+		
 		JLabel brandCriteriaLabel = new JLabel("Въведи марка на автомобила:");
 		JLabel modelCriteriaLabel = new JLabel("Въведи модел на автомобила:");
+		JTextField modelCriteriaTF = new JTextField();
 		JButton carSearchBtn = new JButton("Търси в таблица автомобили");
+		JButton carCriteriaCancelBtn = new JButton("Отмяна на търсене");
+		//---------------------
+		JLabel brandCriteriaLabel2 = new JLabel("Въведи марка на автомобила:");
+		JLabel modelCriteriaLabel2 = new JLabel("Въведи модел на автомобила:");
+		JTextField modelCriteriaTF2 = new JTextField();
+		JLabel nameCriteriaLabel = new JLabel("Въведи първото име на клиента:");
+		JTextField nameCriteriaTF = new JTextField();
+		JButton saleCriteriaSearchBtn = new JButton("Търси в таблица продажби");
+		JButton saleCriteriaCancelBtn = new JButton("Отмяна на търсене");
 		
 		carCriteriaLabel.setFont(carCriteriaLabel.getFont().deriveFont(35.0f));
 		saleCriteriaLabel.setFont(saleCriteriaLabel.getFont().deriveFont(35.0f));
 		brandCriteriaLabel.setFont(brandCriteriaLabel.getFont().deriveFont(15.0f));
 		modelCriteriaLabel.setFont(modelCriteriaLabel.getFont().deriveFont(15.0f));
-		JTextField modelCriteriaTF = new JTextField();
+		
 		headerPanel.add(carCriteriaLabel);
 		
 		searchPanel.add(carCriteriaLabel);
-		//upPanelCriteria.add(carCriteriaLabel);
-		//upPanelCriteria.add(emptyCriteriaLabel);
+		
 		upPanelCriteria.add(brandCriteriaLabel);
 		upPanelCriteria.add(brandCriteriaCombo);
 		upPanelCriteria.add(modelCriteriaLabel);
 		upPanelCriteria.add(modelCriteriaTF);
-		
+		upPanelCriteria.add(carSearchBtn);
+		upPanelCriteria.add(carCriteriaCancelBtn);
+		carCriteriaTable.setModel(DBCarHelper.getAllData());
+		saleCriteriaTable.setModel(DBSaleHelper.getAllData());
+		downPanelCriteria.add(brandCriteriaLabel2);	
+		downPanelCriteria.add(brandCriteriaCombo2);
+		downPanelCriteria.add(modelCriteriaLabel2);
+		downPanelCriteria.add(modelCriteriaTF2);
+		downPanelCriteria.add(nameCriteriaLabel);
+		downPanelCriteria.add(nameCriteriaTF);
+		downPanelCriteria.add(saleCriteriaSearchBtn);
+		downPanelCriteria.add(saleCriteriaCancelBtn);
 		searchPanel.add(upPanelCriteria);
-		searchPanel.add(carSearchBtn);
+		searchPanel.add(carCriteriaScroll);
 		searchPanel.add(saleCriteriaLabel);
 		searchPanel.add(downPanelCriteria);
+		searchPanel.add(saleCriteriaScroll);
 		carSelectTable.addMouseListener(new TableListener());
 		salesTable.addMouseListener(new TableListener());
 		tab.addChangeListener(this);
@@ -523,6 +548,8 @@ public class MainPanel extends JFrame implements ChangeListener{
 					array = brandList.toArray(new String[brandList.size()]);
 					model.addElement(carBrandTF.getText());
 				    brandCombo.setSelectedItem(carBrandTF.getText());
+				    brandCriteriaCombo.setSelectedItem(carBrandTF.getText());
+				    brandCriteriaCombo2.setSelectedItem(carBrandTF.getText());
 					
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
