@@ -598,7 +598,7 @@ public class MainPanel extends JFrame implements ChangeListener{
 					state.execute();
 					carTable.setModel(DBCarHelper.getAllData());
 					carSelectTable.setModel(DBCarHelper.getAllData());
-					
+					carCriteriaTable.setModel(DBCarHelper.getAllData());
 					/*brandTable.setModel(DBBrandHelper.getAllData());
 					
 					//getting all the brands again
@@ -652,7 +652,7 @@ public class MainPanel extends JFrame implements ChangeListener{
 					
 					state.execute();
 					salesTable.setModel(DBSaleHelper.getAllData());
-					
+					saleCriteriaTable.setModel(DBSaleHelper.getAllData());
 					
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
