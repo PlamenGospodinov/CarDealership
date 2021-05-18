@@ -792,6 +792,7 @@ public class MainPanel extends JFrame implements ChangeListener{
 					state.execute();
 					id = -1;
 					carTable.setModel(DBCarHelper.getAllData());
+					carSelectTable.setModel(DBCarHelper.getAllData());
 					carCriteriaTable.setModel(DBCarHelper.getAllData());
 					//int index = brandList.indexOf(selected);
 					
