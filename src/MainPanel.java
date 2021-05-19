@@ -772,6 +772,10 @@ public class MainPanel extends JFrame implements ChangeListener{
 					state.execute();
 					id = -1;
 					brandTable.setModel(DBBrandHelper.getAllData());
+					carTable.setModel(DBCarHelper.getAllData());
+					salesTable.setModel(DBSaleHelper.getAllData());
+					carCriteriaTable.setModel(DBCarHelper.getAllData());
+					saleCriteriaTable.setModel(DBSaleHelper.getAllData());
 					array = brandList.toArray(new String[brandList.size()]);
 					//int index = brandList.indexOf(selected);
 					model.removeElement(selected);
@@ -781,6 +785,7 @@ public class MainPanel extends JFrame implements ChangeListener{
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
+				clearFirstForm();
 			}
 			else if(currentTab == 1) {
 				// TODO Auto-generated method stub
@@ -794,12 +799,14 @@ public class MainPanel extends JFrame implements ChangeListener{
 					carTable.setModel(DBCarHelper.getAllData());
 					carSelectTable.setModel(DBCarHelper.getAllData());
 					carCriteriaTable.setModel(DBCarHelper.getAllData());
+					saleCriteriaTable.setModel(DBSaleHelper.getAllData());
 					//int index = brandList.indexOf(selected);
 					
 				} catch (SQLException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
+				clearSecondForm();
 			}
 			else if(currentTab == 2) {
 				conn = DBSaleHelper.getConnection();
@@ -813,7 +820,7 @@ public class MainPanel extends JFrame implements ChangeListener{
 				}
 			    java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
 				
-				float difference = Float.parseFloat(carSelectTable.getValueAt(row, 4).toString()) - Float.parseFloat(salePriceTF.getText());
+				float difference = Float.parseFloat(salesTable.getValueAt(row, 7).toString()) - Float.parseFloat(salePriceTF.getText()) + Float.parseFloat(salesTable.getValueAt(row, 6).toString());
 				String sql = "UPDATE SALES SET FIRSTNAME = \'"+ firstNameTF.getText() + "\', LASTNAME = \'" + lastNameTF.getText() + "\', SALEDATE = \'" + sqlDate + "\',SALEPRICE = " +Float.parseFloat(salePriceTF.getText()) +" , DIFFERENCE = "+ difference + " WHERE SALEID=?;";
 				try {
 					state = conn.prepareStatement(sql);
@@ -826,6 +833,7 @@ public class MainPanel extends JFrame implements ChangeListener{
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
+				clearThirdForm();
 			}
 			
 		}
