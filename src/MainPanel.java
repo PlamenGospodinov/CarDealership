@@ -26,6 +26,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -507,6 +508,9 @@ public class MainPanel extends JFrame implements ChangeListener{
 		searchPanel.add(saleCriteriaScroll);
 		carSelectTable.addMouseListener(new TableListener());
 		salesTable.addMouseListener(new TableListener());
+		
+		tab.setBackground(new Color(205,150,210));
+		searchPanel.setBackground(new Color(225,150,240));
 		tab.addChangeListener(this);
 		this.setVisible(true);
 	}
@@ -635,7 +639,7 @@ public class MainPanel extends JFrame implements ChangeListener{
 				}
 			    java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
 				
-				float difference = Float.parseFloat(carSelectTable.getValueAt(row, 4).toString()) - Float.parseFloat(salePriceTF.getText());
+				float difference = Float.parseFloat(salePriceTF.getText()) - Float.parseFloat(carSelectTable.getValueAt(row, 4).toString());
 				
 				
 				try {
@@ -723,6 +727,7 @@ public class MainPanel extends JFrame implements ChangeListener{
 					
 					
 					carTable.setModel(DBCarHelper.getAllData());
+					carSelectTable.setModel(DBCarHelper.getAllData());
 					carCriteriaTable.setModel(DBCarHelper.getAllData());
 					id = -1;
 				    
@@ -774,6 +779,7 @@ public class MainPanel extends JFrame implements ChangeListener{
 					brandTable.setModel(DBBrandHelper.getAllData());
 					carTable.setModel(DBCarHelper.getAllData());
 					salesTable.setModel(DBSaleHelper.getAllData());
+					carSelectTable.setModel(DBCarHelper.getAllData());
 					carCriteriaTable.setModel(DBCarHelper.getAllData());
 					saleCriteriaTable.setModel(DBSaleHelper.getAllData());
 					array = brandList.toArray(new String[brandList.size()]);
@@ -820,7 +826,7 @@ public class MainPanel extends JFrame implements ChangeListener{
 				}
 			    java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
 				
-				float difference = Float.parseFloat(salesTable.getValueAt(row, 7).toString()) - Float.parseFloat(salePriceTF.getText()) + Float.parseFloat(salesTable.getValueAt(row, 6).toString());
+				float difference = Math.abs(Float.parseFloat(salesTable.getValueAt(row, 7).toString())) - Float.parseFloat(salePriceTF.getText()) + Float.parseFloat(salesTable.getValueAt(row, 6).toString());
 				String sql = "UPDATE SALES SET FIRSTNAME = \'"+ firstNameTF.getText() + "\', LASTNAME = \'" + lastNameTF.getText() + "\', SALEDATE = \'" + sqlDate + "\',SALEPRICE = " +Float.parseFloat(salePriceTF.getText()) +" , DIFFERENCE = "+ difference + " WHERE SALEID=?;";
 				try {
 					state = conn.prepareStatement(sql);
@@ -1121,7 +1127,14 @@ public class MainPanel extends JFrame implements ChangeListener{
 			    	commentTF.setText(carTable.getValueAt(row, 5).toString());
 			    }
 			    else if(currentTab == 2) {
-			    	
+			    	row = salesTable.getSelectedRow();
+			    	DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+			    	selected = dateFormat.format(salesTable.getValueAt(row, 3));
+			    	System.out.println(selected);
+			    	String[] parts = selected.split("-");
+			    	cbYears.setSelectedItem(parts[0]);
+			    	cbMonths.setSelectedItem(parts[1]);
+			    	cbDays.setSelectedItem(parts[2]);
 			    	firstNameTF.setText(salesTable.getValueAt(row, 4).toString());
 			    	lastNameTF.setText(salesTable.getValueAt(row, 5).toString());
 			    	salePriceTF.setText(salesTable.getValueAt(row, 6).toString());
